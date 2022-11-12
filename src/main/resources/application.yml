@@ -1,0 +1,39 @@
+
+project:
+  name: JDBCSpringBootApp
+
+server:
+  port: 8080
+
+spring:
+  application:
+    name: ${project.name}
+
+swagger:
+  use: true
+  config:
+    basePackage: "com.example.jdbcspringbootapp"
+    appName: "application/vnd.jdbcspringbootapp.v%s+json"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  metrics:
+    enabled: false
+  endpoint:
+    health:
+      show-components: always
+      show-details: always
+  health:
+    db:
+      enabled: false
+
+logging:
+  config: classpath:logback/logback.xml
+  level:
+    com.example.jdbcspringbootapp: trace
+
+service-settings:
+  maxPagingRows: 20

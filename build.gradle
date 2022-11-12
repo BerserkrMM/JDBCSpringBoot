@@ -1,0 +1,52 @@
+plugins {
+	id 'java'
+	id "org.springframework.boot" version "${springBootVersion}"
+	id "io.spring.dependency-management" version "${springDependencyManagementVersion}"
+	id "com.gorylenko.gradle-git-properties" version "${gradleGitProperties}"
+	id 'com.google.cloud.tools.jib' version "${dockerToolsJibVersion}"
+}
+
+apply from: "dependencies.gradle"
+
+gitProperties {
+	dateFormat = "yyyy-MM-dd HH:mm:ssZ"
+	dateFormatTimeZone = "UTC"
+	dateFormatTimeZone = "Europe/Kiev"
+	extProperty = 'gitProps'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = JavaVersion.VERSION_11
+//tartargetCompatibility = JavaVersion.VERSION_11
+generateGitProperties.outputs.upToDateWhen { false }
+
+repositories {
+	mavenCentral()
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.jetbrains:annotations:20.1.0'
+    runtimeOnly 'com.microsoft.sqlserver:mssql-jdbc'
+	runtimeOnly 'org.postgresql:postgresql'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+test {
+	useJUnitPlatform()
+}
+
+jar {
+	enabled = false
+}
+
+bootJar {
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}

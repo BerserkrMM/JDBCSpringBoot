@@ -10,7 +10,6 @@ public class CategoryTransactionEntity {
     @NotNull
     private TRANSACTION_DIRECTIONS type;
 
-
     @NotNull
     private String name;
 }

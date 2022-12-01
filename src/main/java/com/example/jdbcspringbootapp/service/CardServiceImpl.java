@@ -18,15 +18,9 @@ public class CardServiceImpl implements CardService {
 
     public CreateCardRespDto createCard(CreateCardReqDto createCardReqDto) {
 
+        repository.save(createCardReqDto);
 
-        CardEntity cardEntity = mapper.sourceToDestination(createCardReqDto);
-
-
-        //cardEntity = repository.save(cardEntity);
-
-        CreateCardRespDto createCardRespDto = mapper.destinationToSource(cardEntity);
-
-        return createCardRespDto;
+        return new CreateCardRespDto();
     }
 
 }

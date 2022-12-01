@@ -3,14 +3,15 @@ package com.example.jdbcspringbootapp.conrtoller;
 import com.example.jdbcspringbootapp.model.dto.request.CreateCardReqDto;
 import com.example.jdbcspringbootapp.model.dto.response.CreateCardRespDto;
 import com.example.jdbcspringbootapp.model.dto.response.ResponseDto;
+import com.example.jdbcspringbootapp.model.entity.CardEntity;
 import com.example.jdbcspringbootapp.model.enums.STATUS;
+import com.example.jdbcspringbootapp.repository.CardRepositoryImpl;
 import com.example.jdbcspringbootapp.service.CardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/card")
@@ -33,4 +34,8 @@ public class CardController {
         return ResponseEntity.ok(answer);
     }
 
+    @GetMapping(value = "/getFirst")
+    public String getFirstCard(){
+        return null; //cardRepository.getCardEntityById(0L).toString();
+    }
 }

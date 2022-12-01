@@ -1,8 +1,10 @@
 package com.example.jdbcspringbootapp.model.dto.request;
 
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import java.math.BigDecimal;
 
+@Getter
 public class CreateCardReqDto {
     @NotNull
     private BigDecimal amount = BigDecimal.valueOf(0); //set ZERO by default!!!

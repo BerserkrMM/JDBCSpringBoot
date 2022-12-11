@@ -1,9 +1,11 @@
 package com.example.jdbcspringbootapp.model.entity;
 
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
 
+@Getter
 public class CurrencyEntity {
 
     private Long id;

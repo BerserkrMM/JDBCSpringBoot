@@ -3,7 +3,7 @@ package com.example.jdbcspringbootapp.model.entity;
 import com.example.jdbcspringbootapp.model.enums.TRANSACTION_DIRECTIONS;
 import org.jetbrains.annotations.NotNull;
 
-public class CategoryTransactionEntity {
+public class TransactionCategoryEntity {
 
     private Long id;
 

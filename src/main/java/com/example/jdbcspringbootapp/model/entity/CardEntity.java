@@ -14,9 +14,9 @@ public class CardEntity {
     private BigDecimal amount = BigDecimal.valueOf(0); //set ZERO by default!!!
 
     @NotNull
-    private Long currencyId;
+    private Long currency;
 
-    private String simpleName = "Card " + this.hashCode();
+    private String cardName = "Card " + this.hashCode();
 
     @NotNull
     private String bankName;
@@ -25,8 +25,8 @@ public class CardEntity {
     public String toString(){
         return this.id+"\n"
                 +this.amount+"\n"
-                +this.currencyId+"\n"
-                +this.simpleName+"\n"
+                +this.currency+"\n"
+                +this.cardName+"\n"
                 +this.bankName;
 
     }

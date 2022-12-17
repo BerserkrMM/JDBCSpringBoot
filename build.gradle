@@ -1,9 +1,11 @@
 plugins {
-	id 'java'
+	id 'java-library'//against id 'java'
 	id "org.springframework.boot" version "${springBootVersion}"
 	id "io.spring.dependency-management" version "${springDependencyManagementVersion}"
 	id "com.gorylenko.gradle-git-properties" version "${gradleGitProperties}"
 	id 'com.google.cloud.tools.jib' version "${dockerToolsJibVersion}"
+	//added by me
+	id "com.benjaminsproule.swagger" version "${benjaminsprouleSwaggerVersoin}"
 }
 
 apply from: "dependencies.gradle"
@@ -17,26 +19,22 @@ gitProperties {
 
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = JavaVersion.VERSION_11
-//tartargetCompatibility = JavaVersion.VERSION_11
+//sourceCompatibility = JavaVersion.VERSION_11
 generateGitProperties.outputs.upToDateWhen { false }
 
 repositories {
 	mavenCentral()
+	maven { url 'https://spring.io/projects/spring-boot' }
+	//added now
+	jcenter()
+	maven { url 'https://repo.spring.io/ui/native/snapshot' }
+	maven { url 'https://repo.spring.io/milestone' }
 }
 
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
-}
-
-dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter'
-    implementation 'org.jetbrains:annotations:20.1.0'
-    runtimeOnly 'com.microsoft.sqlserver:mssql-jdbc'
-	runtimeOnly 'org.postgresql:postgresql'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
 test {
@@ -49,4 +47,23 @@ jar {
 
 bootJar {
 	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+swagger {
+	apiSource {
+		springmvc = true
+		basePath = '/api'
+		info {
+			title = 'Cards API'
+			description = 'The super heroic Cards API.'
+			version = '1.0'
+			license {
+				url = 'http://www.apache.org/licenses/LICENSE-2.0.html'
+				name = 'Apache 2.0'
+			}
+		}
+		swaggerDirectory = "${project.rootDir}/generated/swagger-json"
+		swaggerApiReader = 'com.github.kongchen.swagger.docgen.reader.SpringMvcApiReader'
+		modelConverters = [ 'io.swagger.validator.BeanValidator' ]
+	}
 }

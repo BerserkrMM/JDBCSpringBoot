@@ -13,6 +13,12 @@ spring:
     url: jdbc:postgresql://localhost:5432/Wallet
     username: postgres
     password: 123
+  profiles:
+    active: dev
+  #added 171222
+  jpa:
+    open-in-view: false
+# added spring.profiles.active=dev
 
 swagger:
   use: true

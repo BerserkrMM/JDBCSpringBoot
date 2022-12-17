@@ -5,12 +5,16 @@ import com.example.jdbcspringbootapp.model.dto.response.*;
 import com.example.jdbcspringbootapp.model.dto.response.cardResponses.*;
 import com.example.jdbcspringbootapp.model.enums.STATUS;
 import com.example.jdbcspringbootapp.service.cardService.CardService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServlet;
 import javax.websocket.server.PathParam;
 
+@Api(tags = "cards")
 @RestController
 @RequestMapping(value = "/card")
 @RequiredArgsConstructor
@@ -20,6 +24,7 @@ public class CardController {
 
     private final CardService cardService;
 
+    @ApiOperation("createCard.")
     @PostMapping(value = "/create", produces = {V_1})
     public ResponseEntity<ResponseDto<CreateCardRespDto>> createCard(@RequestBody CreateCardReqDto createCardReqDto) {
         ResponseDto<CreateCardRespDto> answer = new ResponseDto<>();
@@ -28,6 +33,7 @@ public class CardController {
         return ResponseEntity.ok(answer);
     }
 
+    @ApiOperation("getCardById.")
     @GetMapping(value = "/get")//ex: /get/?id=8
     public ResponseEntity<ResponseDto<GetCardRespDto>> getCardById(@PathParam("id") Long id) {
         ResponseDto answer = new ResponseDto<>();
@@ -37,6 +43,7 @@ public class CardController {
     }
 
     //TODO: getFirstCard()
+    @ApiOperation("getFirstCard.")
     @GetMapping(value = "/getFirstCard")
     public ResponseEntity<ResponseDto<GetFirstCardRespDto>> getFirstCard() {
         ResponseDto answer = new ResponseDto<>();
@@ -46,6 +53,7 @@ public class CardController {
     }
 
     //TODO: deleteCardById(id)
+    @ApiOperation("deleteCardById.")
     @DeleteMapping(value = "/del")
     public ResponseEntity<ResponseDto<DeleteCardRespDto>> deleteCardById(@PathParam("id") Long id) {
         ResponseDto answer = new ResponseDto<>();
@@ -55,6 +63,7 @@ public class CardController {
     }
 
     //TODO: updateCardById(updateCardRequestDTO)
+    @ApiOperation("updateCardById.")
     @PatchMapping(value = "/update", headers = "content-type=application/vnd.api+json")
     public ResponseEntity<ResponseDto<UpdateCardRespDto>> updateCardById(
             @PathParam("id") Long id,

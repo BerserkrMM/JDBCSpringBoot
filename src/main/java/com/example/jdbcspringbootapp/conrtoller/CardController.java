@@ -29,6 +29,8 @@ public class CardController {
 
     @GetMapping(value = "/someM")
     public void someMethod(){    }
+    @GetMapping(value = "/someMM")
+    public void someMethodM(){    }
 
     @ApiOperation("createCard.")
     @PostMapping(value = "/create", produces = {V_1})

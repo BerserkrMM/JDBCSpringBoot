@@ -1,6 +1,7 @@
 package com.example.jdbcspringbootapp.repository.currencyRepository;
 
 import com.example.jdbcspringbootapp.model.dto.request.currencyRequests.*;
+import com.example.jdbcspringbootapp.model.dto.response.cardResponses.GetFirstCardRespDto;
 import com.example.jdbcspringbootapp.model.dto.response.currencyResponses.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
@@ -55,12 +56,14 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
 
     @Override
     public Optional<GetFirstCurrencyRespDto> getFirstCurrency() {
-        var sql = "SELECT * FROM dbo.currency WHERE id=:id";
-        var params = new MapSqlParameterSource()
-                .addValue("id", 1);
+        var sql = "SELECT * FROM dbo.currency LIMIT 1";
         try {
             return Optional.ofNullable(namedParameterJdbcTemplate
-                    .queryForObject(sql, params, new BeanPropertyRowMapper<>(GetFirstCurrencyRespDto.class)));
+                    .queryForObject(sql
+                            ,new MapSqlParameterSource()
+                            ,new BeanPropertyRowMapper<>(GetFirstCurrencyRespDto.class)
+                    ));
+
         } catch (DataAccessException e) {
             return Optional.empty();
         }

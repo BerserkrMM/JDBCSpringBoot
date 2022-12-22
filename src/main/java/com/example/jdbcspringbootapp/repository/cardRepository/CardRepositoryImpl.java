@@ -3,12 +3,18 @@ package com.example.jdbcspringbootapp.repository.cardRepository;
 import com.example.jdbcspringbootapp.model.dto.request.cardRequests.*;
 import com.example.jdbcspringbootapp.model.dto.response.cardResponses.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -56,13 +62,16 @@ public class CardRepositoryImpl implements CardRepository {
 
     @Override
     public Optional<GetFirstCardRespDto> getFirstCard() {
-        var sql = "SELECT * FROM dbo.cards WHERE id=:id";
-        var params = new MapSqlParameterSource()
-                .addValue("id", 1);
+        var sql = "SELECT * FROM dbo.cards LIMIT 1";
         try {
             return Optional.ofNullable(namedParameterJdbcTemplate
-                    .queryForObject(sql, params, new BeanPropertyRowMapper<>(GetFirstCardRespDto.class)));
-        } catch (DataAccessException e) {
+                    .queryForObject(sql
+                            ,new MapSqlParameterSource()
+                            ,new BeanPropertyRowMapper<>(GetFirstCardRespDto.class)
+                    ));
+
+        }
+        catch (DataAccessException e) {
             return Optional.empty();
         }
     }

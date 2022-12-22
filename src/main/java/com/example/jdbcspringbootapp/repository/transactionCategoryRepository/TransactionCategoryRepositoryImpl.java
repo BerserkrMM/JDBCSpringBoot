@@ -1,6 +1,7 @@
 package com.example.jdbcspringbootapp.repository.transactionCategoryRepository;
 
 import com.example.jdbcspringbootapp.model.dto.request.transactionCategoriesRequests.*;
+import com.example.jdbcspringbootapp.model.dto.response.currencyResponses.GetFirstCurrencyRespDto;
 import com.example.jdbcspringbootapp.model.dto.response.tranactionCategoriesResponses.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
@@ -55,12 +56,14 @@ public class TransactionCategoryRepositoryImpl implements TransactionCategoryRep
 
     @Override
     public Optional<GetFirstTransactionCategoryRespDto> getFirstTransactionCategory() {
-        var sql = "SELECT * FROM dbo.transaction_categories WHERE id=:id";
-        var params = new MapSqlParameterSource()
-                .addValue("id", 1);
+        var sql = "SELECT * FROM dbo.transaction_categories LIMIT 1";
         try {
             return Optional.ofNullable(namedParameterJdbcTemplate
-                    .queryForObject(sql, params, new BeanPropertyRowMapper<>(GetFirstTransactionCategoryRespDto.class)));
+                    .queryForObject(sql
+                            ,new MapSqlParameterSource()
+                            ,new BeanPropertyRowMapper<>(GetFirstTransactionCategoryRespDto.class)
+                    ));
+
         } catch (DataAccessException e) {
             return Optional.empty();
         }

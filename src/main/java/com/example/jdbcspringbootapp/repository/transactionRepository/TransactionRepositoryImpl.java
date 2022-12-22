@@ -2,6 +2,7 @@ package com.example.jdbcspringbootapp.repository.transactionRepository;
 
 import com.example.jdbcspringbootapp.model.dto.request.transactionRequests.CreateTransactionReqDto;
 import com.example.jdbcspringbootapp.model.dto.request.transactionRequests.UpdateTransactionReqDto;
+import com.example.jdbcspringbootapp.model.dto.response.tranactionCategoriesResponses.GetFirstTransactionCategoryRespDto;
 import com.example.jdbcspringbootapp.model.dto.response.transactionResponses.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
@@ -59,12 +60,14 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 
     @Override
     public Optional<GetFirstTransactionRespDto> getFirstTransaction() {
-        var sql = "SELECT * FROM dbo.transactions WHERE id=:id";
-        var params = new MapSqlParameterSource()
-                .addValue("id", 1);
+        var sql = "SELECT * FROM dbo.transactions LIMIT 1";
         try {
             return Optional.ofNullable(namedParameterJdbcTemplate
-                    .queryForObject(sql, params, new BeanPropertyRowMapper<>(GetFirstTransactionRespDto.class)));
+                    .queryForObject(sql
+                            ,new MapSqlParameterSource()
+                            ,new BeanPropertyRowMapper<>(GetFirstTransactionRespDto.class)
+                    ));
+
         } catch (DataAccessException e) {
             return Optional.empty();
         }

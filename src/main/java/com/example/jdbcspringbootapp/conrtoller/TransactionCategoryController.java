@@ -5,12 +5,14 @@ import com.example.jdbcspringbootapp.model.dto.response.tranactionCategoriesResp
 import com.example.jdbcspringbootapp.model.dto.response.ResponseDto;
 import com.example.jdbcspringbootapp.model.enums.STATUS;
 import com.example.jdbcspringbootapp.service.transactionCategoryService.TransactionCategoryService;
+import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.websocket.server.PathParam;
 
+@Api(tags = "Transaction Categories")
 @RestController
 @RequestMapping(value = "/tr_category")
 @RequiredArgsConstructor

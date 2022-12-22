@@ -5,6 +5,7 @@ import com.example.jdbcspringbootapp.model.dto.response.ResponseDto;
 import com.example.jdbcspringbootapp.model.dto.response.transactionResponses.*;
 import com.example.jdbcspringbootapp.model.enums.STATUS;
 import com.example.jdbcspringbootapp.service.transactionService.TransactionService;
+import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.ietf.jgss.Oid;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.websocket.server.PathParam;
 
+@Api(tags = "Transactions")
 @RestController
 @RequestMapping(value = "/transaction")
 @RequiredArgsConstructor

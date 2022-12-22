@@ -5,12 +5,15 @@ import com.example.jdbcspringbootapp.model.dto.response.ResponseDto;
 import com.example.jdbcspringbootapp.model.dto.response.currencyResponses.*;
 import com.example.jdbcspringbootapp.model.enums.STATUS;
 import com.example.jdbcspringbootapp.service.currencyService.CurrencyService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.websocket.server.PathParam;
 
+@Api(tags = "Currencies")
 @RestController
 @RequestMapping(value = "/currency")
 @RequiredArgsConstructor
@@ -20,6 +23,7 @@ public class CurrencyController {
 
     private final CurrencyService currencyService;
 
+    @ApiOperation()
     @PostMapping(value = "/create", produces = {V_1})
     public ResponseEntity<ResponseDto<CreateCurrencyRespDto>> createCurrency(@RequestBody CreateCurrencyReqDto createCurrencyReqDto) {
         ResponseDto<CreateCurrencyRespDto> answer = new ResponseDto<>();

@@ -1,9 +1,9 @@
 package com.example.jdbcspringbootapp.conrtoller;
 
-import com.example.jdbcspringbootapp.model.dto.request.cardRequests.*;
-import com.example.jdbcspringbootapp.model.dto.response.*;
+import com.example.jdbcspringbootapp.model.dto.request.cardRequests.CreateCardReqDto;
+import com.example.jdbcspringbootapp.model.dto.request.cardRequests.UpdateCardReqDto;
+import com.example.jdbcspringbootapp.model.dto.response.ResponseDto;
 import com.example.jdbcspringbootapp.model.dto.response.cardResponses.*;
-import com.example.jdbcspringbootapp.model.entity.CardEntity;
 import com.example.jdbcspringbootapp.model.enums.STATUS;
 import com.example.jdbcspringbootapp.service.cardService.CardService;
 import io.swagger.annotations.Api;
@@ -12,12 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServlet;
 import javax.websocket.server.PathParam;
-import java.util.Collection;
-import java.util.List;
 
-@Api(tags = "cards")
+@Api(tags = "Cards")
 @RestController
 @RequestMapping(value = "/card")
 @RequiredArgsConstructor
@@ -26,11 +23,6 @@ public class CardController {
     private static final String V_1 = "application/vnd.jdbcspringbootapp.v_1+json";
 
     private final CardService cardService;
-
-    @GetMapping(value = "/someM")
-    public void someMethod(){    }
-    @GetMapping(value = "/someMM")
-    public void someMethodM(){    }
 
     @ApiOperation("createCard.")
     @PostMapping(value = "/create", produces = {V_1})

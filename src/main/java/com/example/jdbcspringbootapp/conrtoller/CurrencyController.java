@@ -1,10 +1,11 @@
 package com.example.jdbcspringbootapp.conrtoller;
 
-import com.example.jdbcspringbootapp.model.dto.request.currencyRequests.*;
+import com.example.jdbcspringbootapp.model.dto.request.currency.CreateCurrencyReqDto;
+import com.example.jdbcspringbootapp.model.dto.request.currency.UpdateCurrencyReqDto;
 import com.example.jdbcspringbootapp.model.dto.response.ResponseDto;
-import com.example.jdbcspringbootapp.model.dto.response.currencyResponses.*;
+import com.example.jdbcspringbootapp.model.dto.response.currency.*;
 import com.example.jdbcspringbootapp.model.enums.Status;
-import com.example.jdbcspringbootapp.service.currencyService.CurrencyService;
+import com.example.jdbcspringbootapp.service.currency.CurrencyService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -26,48 +27,43 @@ public class CurrencyController {
     //Create only if no Currencies with income code in DB
     @PostMapping(value = "/create", produces = {V_1})
     public ResponseEntity<ResponseDto<CreateCurrencyRespDto>> createCurrency(@RequestBody CreateCurrencyReqDto createCurrencyReqDto) throws IllegalAccessException {
-        ResponseDto<CreateCurrencyRespDto> answer = new ResponseDto<>();
-        answer.setData(currencyService.createCurrency(createCurrencyReqDto));
-        answer.setStatus(Status.OK);
-        return ResponseEntity.ok(answer);
+        return ResponseEntity.ok(currencyService.createCurrency(createCurrencyReqDto));
     }
 
     @GetMapping(value = "/get", produces = {V_1})//ex: /get/?id=8
     public ResponseEntity<ResponseDto<GetCurrencyRespDto>> getCurrencyById(@PathParam("id") Long id) {
-        ResponseDto answer = new ResponseDto<>();
+        ResponseDto<GetCurrencyRespDto> answer = new ResponseDto<>();
         answer.setData(currencyService.getCurrencyById(id));
         answer.setStatus(Status.OK);
         return ResponseEntity.ok(answer);
     }
 
-    //TODO: getFirstCurrency()
+
     @GetMapping(value = "/getFirstCurrency")
     public ResponseEntity<ResponseDto<GetFirstCurrencyRespDto>> getFirstCurrency() {
-        ResponseDto answer = new ResponseDto<>();
+        ResponseDto<GetFirstCurrencyRespDto> answer = new ResponseDto<>();
         answer.setData(currencyService.getFirstCurrency());
         answer.setStatus(Status.OK);
         return ResponseEntity.ok(answer);
     }
 
-    //TODO: deleteCurrencyById(id)
+
     @DeleteMapping(value = "/del")
     public ResponseEntity<ResponseDto<DeleteCurrencyRespDto>> deleteCurrencyById(@PathParam("id") Long id) {
-        ResponseDto answer = new ResponseDto<>();
+        ResponseDto<DeleteCurrencyRespDto> answer = new ResponseDto<>();
         answer.setData(currencyService.deleteCurrencyById(id));
         answer.setStatus(Status.OK);
         return ResponseEntity.ok(answer);
     }
 
-    //TODO: updateCurrencyById(updateCurrencyRequestDTO)
+
     @PatchMapping(value = "/update", headers = "content-type=application/vnd.api+json")
     public ResponseEntity<ResponseDto<UpdateCurrencyRespDto>> updateCurrencyById(
             @PathParam("id") Long id,
             @RequestBody UpdateCurrencyReqDto updateCurrencyReqDto) {
-        ResponseDto answer = new ResponseDto<>();
+        ResponseDto<UpdateCurrencyRespDto> answer = new ResponseDto<>();
         answer.setData(currencyService.updateCurrencyById(id, updateCurrencyReqDto));
         answer.setStatus(Status.OK);
         return ResponseEntity.ok(answer);
     }
-    //TODO: namedParametersJDBCTemplate VS JDBCTemplate read about!!!
-    //named can add parameters with no sequence
 }

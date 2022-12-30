@@ -1,17 +1,13 @@
 package com.example.jdbcspringbootapp.model.entity;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
-@Entity
 @Getter
 public class CardEntity {
 
-    @Id
     private Long id;
 
     @NotNull
@@ -32,7 +28,5 @@ public class CardEntity {
                 +this.currency+"\n"
                 +this.cardName+"\n"
                 +this.bankName;
-
     }
-
 }

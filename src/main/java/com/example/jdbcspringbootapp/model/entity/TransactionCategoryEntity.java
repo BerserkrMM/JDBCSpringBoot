@@ -1,7 +1,9 @@
 package com.example.jdbcspringbootapp.model.entity;
 
 import com.example.jdbcspringbootapp.model.enums.Transaction_Directions;
-import org.jetbrains.annotations.NotNull;
+
+import javax.validation.constraints.NotNull;
+
 
 public class TransactionCategoryEntity {
 

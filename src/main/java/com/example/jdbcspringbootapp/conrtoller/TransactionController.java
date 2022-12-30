@@ -1,10 +1,10 @@
 package com.example.jdbcspringbootapp.conrtoller;
 
-import com.example.jdbcspringbootapp.model.dto.request.transactionRequests.*;
+import com.example.jdbcspringbootapp.model.dto.request.transaction.*;
 import com.example.jdbcspringbootapp.model.dto.response.ResponseDto;
-import com.example.jdbcspringbootapp.model.dto.response.transactionResponses.*;
+import com.example.jdbcspringbootapp.model.dto.response.transaction.*;
 import com.example.jdbcspringbootapp.model.enums.Status;
-import com.example.jdbcspringbootapp.service.transactionService.TransactionService;
+import com.example.jdbcspringbootapp.service.transaction.TransactionService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -36,43 +36,38 @@ public class TransactionController {
     public ResponseEntity<ResponseDto<GetTransactionRespDto>> getTransactionById(
             @PathParam("id") Long id
     ) {
-        ResponseDto answer = new ResponseDto<>();
+        ResponseDto<GetTransactionRespDto> answer = new ResponseDto<>();
         answer.setData(transactionService.getTransactionById(id));
         answer.setStatus(Status.OK);
         return ResponseEntity.ok(answer);
     }
 
-    //TODO: getFirstTransaction()
     @GetMapping(value = "/get_first")
     public ResponseEntity<ResponseDto<GetFirstTransactionRespDto>> getFirstTransaction() {
-        ResponseDto answer = new ResponseDto<>();
+        ResponseDto<GetFirstTransactionRespDto> answer = new ResponseDto<>();
         answer.setData(transactionService.getFirstTransaction());
         answer.setStatus(Status.OK);
         return ResponseEntity.ok(answer);
     }
 
-    //TODO: deleteTransactionById(id)
     @DeleteMapping(value = "/del")
     public ResponseEntity<ResponseDto<DeleteTransactionRespDto>> deleteTransactionById(
             @PathParam("id") Long id
     ) {
-        ResponseDto answer = new ResponseDto<>();
+        ResponseDto<DeleteTransactionRespDto> answer = new ResponseDto<>();
         answer.setData(transactionService.deleteTransactionById(id));
         answer.setStatus(Status.OK);
         return ResponseEntity.ok(answer);
     }
 
-    //TODO: updateTransactionById(updateTransactionRequestDTO)
     @PatchMapping(value = "/update", headers = "content-type=application/vnd.api+json")
     public ResponseEntity<ResponseDto<UpdateTransactionRespDto>> updateTransactionById(
             @PathParam("id") Long id,
             @RequestBody UpdateTransactionReqDto updateTransactionReqDto) {
-        ResponseDto answer = new ResponseDto<>();
+        ResponseDto<UpdateTransactionRespDto> answer = new ResponseDto<>();
         answer.setData(transactionService.updateTransactionById(
                 id, updateTransactionReqDto));
         answer.setStatus(Status.OK);
         return ResponseEntity.ok(answer);
     }
-    //TODO: namedParametersJDBCTemplate VS JDBCTemplate read about!!!
-    //named can add parameters with no sequence
 }

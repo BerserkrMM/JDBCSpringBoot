@@ -1,27 +1,20 @@
-package com.example.jdbcspringbootapp.model.entity;
+package com.example.jdbcspringbootapp.model.dto.request.transaction;
 
 import com.example.jdbcspringbootapp.model.enums.Transaction_Directions;
-
-import javax.validation.constraints.NotNull;
+import lombok.*;
 import java.math.BigDecimal;
 
-public class TransactionEntity {
-
-    private Long id;
-
-    @NotNull
+//ОБОВ₴ЯЗКОВО анотації для ДТО:
+@Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class UpdateTransactionReqDto {
     private Transaction_Directions direction;
-
-    @NotNull
     private BigDecimal amount;
-
-    @NotNull
     private Long cardId;
-
-    @NotNull
     private Long currencyId;
-
     private Long transactionCategoryID;
-
     private String infoExtra;
 }

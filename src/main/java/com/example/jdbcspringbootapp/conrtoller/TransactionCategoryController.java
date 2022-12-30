@@ -1,10 +1,10 @@
 package com.example.jdbcspringbootapp.conrtoller;
 
-import com.example.jdbcspringbootapp.model.dto.request.transactionCategoriesRequests.*;
-import com.example.jdbcspringbootapp.model.dto.response.tranactionCategoriesResponses.*;
+import com.example.jdbcspringbootapp.model.dto.request.transactioncategories.*;
+import com.example.jdbcspringbootapp.model.dto.response.tranactioncategories.*;
 import com.example.jdbcspringbootapp.model.dto.response.ResponseDto;
 import com.example.jdbcspringbootapp.model.enums.Status;
-import com.example.jdbcspringbootapp.service.transactionCategoryService.TransactionCategoryService;
+import com.example.jdbcspringbootapp.service.transactioncategory.TransactionCategoryService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -36,43 +36,38 @@ public class TransactionCategoryController {
     public ResponseEntity<ResponseDto<GetTransactionCategoryRespDto>> getTransactionCategoryById(
             @PathParam("id") Long id
     ) {
-        ResponseDto answer = new ResponseDto<>();
+        ResponseDto<GetTransactionCategoryRespDto> answer = new ResponseDto<>();
         answer.setData(transactionCategoryService.getTransactionCategoryById(id));
         answer.setStatus(Status.OK);
         return ResponseEntity.ok(answer);
     }
 
-    //TODO: getFirstTransactionCategory()
     @GetMapping(value = "/get_first_tr_category")
     public ResponseEntity<ResponseDto<GetFirstTransactionCategoryRespDto>> getFirstTransactionCategory() {
-        ResponseDto answer = new ResponseDto<>();
+        ResponseDto<GetFirstTransactionCategoryRespDto> answer = new ResponseDto<>();
         answer.setData(transactionCategoryService.getFirstTransactionCategory());
         answer.setStatus(Status.OK);
         return ResponseEntity.ok(answer);
     }
 
-    //TODO: deleteTransactionCategoryById(id)
     @DeleteMapping(value = "/del")
     public ResponseEntity<ResponseDto<DeleteTransactionCategoryRespDto>> deleteTransactionCategoryById(
             @PathParam("id") Long id
     ) {
-        ResponseDto answer = new ResponseDto<>();
+        ResponseDto<DeleteTransactionCategoryRespDto> answer = new ResponseDto<>();
         answer.setData(transactionCategoryService.deleteTransactionCategoryById(id));
         answer.setStatus(Status.OK);
         return ResponseEntity.ok(answer);
     }
 
-    //TODO: updateTransactionCategoryById(updateTransactionCategoryRequestDTO)
     @PatchMapping(value = "/update", headers = "content-type=application/vnd.api+json")
     public ResponseEntity<ResponseDto<UpdateTransactionCategoryRespDto>> updateTransactionCategoryById(
             @PathParam("id") Long id,
             @RequestBody UpdateTransactionCategoryReqDto updateTransactionCategoryReqDto) {
-        ResponseDto answer = new ResponseDto<>();
+        ResponseDto<UpdateTransactionCategoryRespDto> answer = new ResponseDto<>();
         answer.setData(transactionCategoryService.updateTransactionCategoryById(
                 id, updateTransactionCategoryReqDto));
         answer.setStatus(Status.OK);
         return ResponseEntity.ok(answer);
     }
-    //TODO: namedParametersJDBCTemplate VS JDBCTemplate read about!!!
-    //named can add parameters with no sequence
 }

@@ -1,8 +1,9 @@
 package com.example.jdbcspringbootapp.model.entity;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
 
+
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 @Getter

@@ -4,7 +4,7 @@ import com.example.jdbcspringbootapp.model.dto.request.cardRequests.CreateCardRe
 import com.example.jdbcspringbootapp.model.dto.request.cardRequests.UpdateCardReqDto;
 import com.example.jdbcspringbootapp.model.dto.response.ResponseDto;
 import com.example.jdbcspringbootapp.model.dto.response.cardResponses.*;
-import com.example.jdbcspringbootapp.model.enums.STATUS;
+import com.example.jdbcspringbootapp.model.enums.Status;
 import com.example.jdbcspringbootapp.service.cardService.CardService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -29,7 +29,7 @@ public class CardController {
     public ResponseEntity<ResponseDto<CreateCardRespDto>> createCard(@RequestBody CreateCardReqDto createCardReqDto) {
         ResponseDto<CreateCardRespDto> answer = new ResponseDto<>();
         answer.setData(cardService.createCard(createCardReqDto));
-        answer.setStatus(STATUS.OK);
+        answer.setStatus(Status.OK);
         return ResponseEntity.ok(answer);
     }
 
@@ -38,7 +38,7 @@ public class CardController {
     public ResponseEntity<ResponseDto<GetCardRespDto>> getCardById(@PathParam("id") Long id) {
         ResponseDto answer = new ResponseDto<>();
         answer.setData(cardService.getCardById(id));
-        answer.setStatus(STATUS.OK);
+        answer.setStatus(Status.OK);
         return ResponseEntity.ok(answer);
     }
 
@@ -48,7 +48,7 @@ public class CardController {
     public ResponseEntity<ResponseDto<GetFirstCardRespDto>> getFirstCard() {
         ResponseDto answer = new ResponseDto<>();
         answer.setData(cardService.getFirstCard());
-        answer.setStatus(STATUS.OK);
+        answer.setStatus(Status.OK);
         return ResponseEntity.ok(answer);
     }
 
@@ -58,7 +58,7 @@ public class CardController {
     public ResponseEntity<ResponseDto<DeleteCardRespDto>> deleteCardById(@PathParam("id") Long id) {
         ResponseDto answer = new ResponseDto<>();
         answer.setData(cardService.deleteCardById(id));
-        answer.setStatus(STATUS.OK);
+        answer.setStatus(Status.OK);
         return ResponseEntity.ok(answer);
     }
 
@@ -70,7 +70,7 @@ public class CardController {
             @RequestBody UpdateCardReqDto updateCardReqDto) {
         ResponseDto answer = new ResponseDto<>();
         answer.setData(cardService.updateCardById(id, updateCardReqDto));
-        answer.setStatus(STATUS.OK);
+        answer.setStatus(Status.OK);
         return ResponseEntity.ok(answer);
     }
     //TODO: namedParametersJDBCTemplate VS JDBCTemplate read about!!!

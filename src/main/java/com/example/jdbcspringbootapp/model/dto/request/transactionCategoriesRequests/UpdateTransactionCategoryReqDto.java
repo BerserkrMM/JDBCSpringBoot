@@ -1,6 +1,6 @@
 package com.example.jdbcspringbootapp.model.dto.request.transactionCategoriesRequests;
 
-import com.example.jdbcspringbootapp.model.enums.TRANSACTION_DIRECTIONS;
+import com.example.jdbcspringbootapp.model.enums.Transaction_Directions;
 import lombok.*;
 
 //ОБОВ₴ЯЗКОВО анотації для ДТО:
@@ -10,6 +10,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateTransactionCategoryReqDto {
-    private TRANSACTION_DIRECTIONS type;
+    private Transaction_Directions type;
     private String name;
 }

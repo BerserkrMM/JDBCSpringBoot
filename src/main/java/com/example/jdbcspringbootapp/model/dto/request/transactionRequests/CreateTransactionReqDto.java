@@ -1,6 +1,6 @@
 package com.example.jdbcspringbootapp.model.dto.request.transactionRequests;
 
-import com.example.jdbcspringbootapp.model.enums.TRANSACTION_DIRECTIONS;
+import com.example.jdbcspringbootapp.model.enums.Transaction_Directions;
 import lombok.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class CreateTransactionReqDto {
     @NotNull
-    private TRANSACTION_DIRECTIONS direction;
+    private Transaction_Directions direction;
 
     @NotNull
     private BigDecimal amount;

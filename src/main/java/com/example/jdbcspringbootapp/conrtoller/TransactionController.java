@@ -3,11 +3,10 @@ package com.example.jdbcspringbootapp.conrtoller;
 import com.example.jdbcspringbootapp.model.dto.request.transactionRequests.*;
 import com.example.jdbcspringbootapp.model.dto.response.ResponseDto;
 import com.example.jdbcspringbootapp.model.dto.response.transactionResponses.*;
-import com.example.jdbcspringbootapp.model.enums.STATUS;
+import com.example.jdbcspringbootapp.model.enums.Status;
 import com.example.jdbcspringbootapp.service.transactionService.TransactionService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
-import org.ietf.jgss.Oid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +28,7 @@ public class TransactionController {
     ) {
         ResponseDto<CreateTransactionRespDto> answer = new ResponseDto<>();
         answer.setData(transactionService.createTransaction(createTransactionReqDto));
-        answer.setStatus(STATUS.OK);
+        answer.setStatus(Status.OK);
         return ResponseEntity.ok(answer);
     }
 
@@ -39,7 +38,7 @@ public class TransactionController {
     ) {
         ResponseDto answer = new ResponseDto<>();
         answer.setData(transactionService.getTransactionById(id));
-        answer.setStatus(STATUS.OK);
+        answer.setStatus(Status.OK);
         return ResponseEntity.ok(answer);
     }
 
@@ -48,7 +47,7 @@ public class TransactionController {
     public ResponseEntity<ResponseDto<GetFirstTransactionRespDto>> getFirstTransaction() {
         ResponseDto answer = new ResponseDto<>();
         answer.setData(transactionService.getFirstTransaction());
-        answer.setStatus(STATUS.OK);
+        answer.setStatus(Status.OK);
         return ResponseEntity.ok(answer);
     }
 
@@ -59,7 +58,7 @@ public class TransactionController {
     ) {
         ResponseDto answer = new ResponseDto<>();
         answer.setData(transactionService.deleteTransactionById(id));
-        answer.setStatus(STATUS.OK);
+        answer.setStatus(Status.OK);
         return ResponseEntity.ok(answer);
     }
 
@@ -71,7 +70,7 @@ public class TransactionController {
         ResponseDto answer = new ResponseDto<>();
         answer.setData(transactionService.updateTransactionById(
                 id, updateTransactionReqDto));
-        answer.setStatus(STATUS.OK);
+        answer.setStatus(Status.OK);
         return ResponseEntity.ok(answer);
     }
     //TODO: namedParametersJDBCTemplate VS JDBCTemplate read about!!!

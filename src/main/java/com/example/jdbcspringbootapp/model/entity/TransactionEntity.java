@@ -1,6 +1,6 @@
 package com.example.jdbcspringbootapp.model.entity;
 
-import com.example.jdbcspringbootapp.model.enums.TRANSACTION_DIRECTIONS;
+import com.example.jdbcspringbootapp.model.enums.Transaction_Directions;
 import org.jetbrains.annotations.NotNull;
 import java.math.BigDecimal;
 
@@ -9,7 +9,7 @@ public class TransactionEntity {
     private Long id;
 
     @NotNull
-    private TRANSACTION_DIRECTIONS direction;
+    private Transaction_Directions direction;
 
     @NotNull
     private BigDecimal amount;

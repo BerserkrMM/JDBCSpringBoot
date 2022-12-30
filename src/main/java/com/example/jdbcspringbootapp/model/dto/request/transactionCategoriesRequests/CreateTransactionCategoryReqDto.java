@@ -1,6 +1,6 @@
 package com.example.jdbcspringbootapp.model.dto.request.transactionCategoriesRequests;
 
-import com.example.jdbcspringbootapp.model.enums.TRANSACTION_DIRECTIONS;
+import com.example.jdbcspringbootapp.model.enums.Transaction_Directions;
 import lombok.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 @AllArgsConstructor
 public class CreateTransactionCategoryReqDto {
     @NotNull
-    private TRANSACTION_DIRECTIONS type;
+    private Transaction_Directions type;
     @NotNull
     private String name;
 }

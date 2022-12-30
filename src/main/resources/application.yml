@@ -24,7 +24,7 @@ swagger:
   use: true
   config:
     basePackage: "com.example.jdbcspringbootapp"
-    appName: "application/vnd.jdbcspringbootapp.v%s+json"
+    appName: "AndreW_"
 
 management:
   endpoints:

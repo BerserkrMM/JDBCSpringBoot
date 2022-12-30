@@ -12,7 +12,13 @@ public class CurrencyServiceImpl implements CurrencyService {
     private final CurrencyRepository repository;
 
     @Override
-    public CreateCurrencyRespDto createCurrency(CreateCurrencyReqDto createCurrencyReqDto) {
+    public CreateCurrencyRespDto createCurrency(CreateCurrencyReqDto createCurrencyReqDto) throws IllegalAccessException {
+        //realise (return Optional<Currency/id> / boolean)
+        //.orElseThrow(()->new IllegalAccessError("Currency with this code already exist."));
+
+        if (repository.tryExistenceByCode(createCurrencyReqDto.getCode())) {
+            throw new IllegalAccessException("Currency with this code already exist.");
+        }
         return repository.createCurrency(createCurrencyReqDto).get();
     }
 
@@ -28,6 +34,7 @@ public class CurrencyServiceImpl implements CurrencyService {
 
     @Override
     public DeleteCurrencyRespDto deleteCurrencyById(Long id) {
+
         return repository.deleteCurrencyById(id).get();
     }
 

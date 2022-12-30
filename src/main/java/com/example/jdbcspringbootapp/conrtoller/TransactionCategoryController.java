@@ -3,7 +3,7 @@ package com.example.jdbcspringbootapp.conrtoller;
 import com.example.jdbcspringbootapp.model.dto.request.transactionCategoriesRequests.*;
 import com.example.jdbcspringbootapp.model.dto.response.tranactionCategoriesResponses.*;
 import com.example.jdbcspringbootapp.model.dto.response.ResponseDto;
-import com.example.jdbcspringbootapp.model.enums.STATUS;
+import com.example.jdbcspringbootapp.model.enums.Status;
 import com.example.jdbcspringbootapp.service.transactionCategoryService.TransactionCategoryService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,7 @@ public class TransactionCategoryController {
     ) {
         ResponseDto<CreateTransactionCategoryRespDto> answer = new ResponseDto<>();
         answer.setData(transactionCategoryService.createTransactionCategory(createTransactionCategoryReqDto));
-        answer.setStatus(STATUS.OK);
+        answer.setStatus(Status.OK);
         return ResponseEntity.ok(answer);
     }
 
@@ -38,7 +38,7 @@ public class TransactionCategoryController {
     ) {
         ResponseDto answer = new ResponseDto<>();
         answer.setData(transactionCategoryService.getTransactionCategoryById(id));
-        answer.setStatus(STATUS.OK);
+        answer.setStatus(Status.OK);
         return ResponseEntity.ok(answer);
     }
 
@@ -47,7 +47,7 @@ public class TransactionCategoryController {
     public ResponseEntity<ResponseDto<GetFirstTransactionCategoryRespDto>> getFirstTransactionCategory() {
         ResponseDto answer = new ResponseDto<>();
         answer.setData(transactionCategoryService.getFirstTransactionCategory());
-        answer.setStatus(STATUS.OK);
+        answer.setStatus(Status.OK);
         return ResponseEntity.ok(answer);
     }
 
@@ -58,7 +58,7 @@ public class TransactionCategoryController {
     ) {
         ResponseDto answer = new ResponseDto<>();
         answer.setData(transactionCategoryService.deleteTransactionCategoryById(id));
-        answer.setStatus(STATUS.OK);
+        answer.setStatus(Status.OK);
         return ResponseEntity.ok(answer);
     }
 
@@ -70,7 +70,7 @@ public class TransactionCategoryController {
         ResponseDto answer = new ResponseDto<>();
         answer.setData(transactionCategoryService.updateTransactionCategoryById(
                 id, updateTransactionCategoryReqDto));
-        answer.setStatus(STATUS.OK);
+        answer.setStatus(Status.OK);
         return ResponseEntity.ok(answer);
     }
     //TODO: namedParametersJDBCTemplate VS JDBCTemplate read about!!!

@@ -1,9 +1,10 @@
 package com.example.jdbcspringbootapp.repository.currencyRepository;
 
+import com.example.jdbcspringbootapp.exception.DatabaseOperationException;
 import com.example.jdbcspringbootapp.model.dto.request.currencyRequests.*;
-import com.example.jdbcspringbootapp.model.dto.response.cardResponses.GetFirstCardRespDto;
 import com.example.jdbcspringbootapp.model.dto.response.currencyResponses.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -13,10 +14,10 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
+@Slf4j
 public class CurrencyRepositoryImpl implements CurrencyRepository {
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
@@ -60,8 +61,8 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
         try {
             return Optional.ofNullable(namedParameterJdbcTemplate
                     .queryForObject(sql
-                            ,new MapSqlParameterSource()
-                            ,new BeanPropertyRowMapper<>(GetFirstCurrencyRespDto.class)
+                            , new MapSqlParameterSource()
+                            , new BeanPropertyRowMapper<>(GetFirstCurrencyRespDto.class)
                     ));
 
         } catch (DataAccessException e) {
@@ -69,6 +70,7 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
         }
     }
 
+    // write logic for delition
     @Override
     public Optional<DeleteCurrencyRespDto> deleteCurrencyById(Long id) {
         var sqlDel = "DELETE FROM dbo.currency WHERE id=:id RETURNING *";
@@ -113,10 +115,10 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
             paramsSqlUpdate.addValue("exchangeRateToUSD", updateCurrencyReqDto.getExchangeRateToUSD());
         }
 
-        var sqlUpdate =   "UPDATE dbo.currency SET                                          "
-                        + String.join(",", params)
-                        + ", uuid=gen_random_uuid(), modified_timestamp = current_timestamp "
-                        + "WHERE id=:id                                                     ";
+        var sqlUpdate = "UPDATE dbo.currency SET                                          "
+                + String.join(",", params)
+                + ", uuid=gen_random_uuid(), modified_timestamp = current_timestamp "
+                + "WHERE id=:id                                                     ";
         try {
             namedParameterJdbcTemplate.update(sqlUpdate, paramsSqlUpdate);
             return Optional.ofNullable(oldCurrencyUpdtRespDto);
@@ -124,5 +126,16 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
             e.getStackTrace();
             return Optional.empty();
         }
+    }
+
+    @Override
+    public Optional<Long> tryExistenceByCode(String code) {
+
+        String sql = "SELECT id FROM dbo.currency where Code = :code";
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("code", code);
+
+        return executeQueryWithOptionalResult(()->namedParameterJdbcTemplate.queryForObject(sql,params,Long.class));
     }
 }

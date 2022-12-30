@@ -1,7 +1,7 @@
 package com.example.jdbcspringbootapp.model.dto.response.transactionResponses;
 
 import com.example.jdbcspringbootapp.model.dto.response.BaseFieldsResponseDTO;
-import com.example.jdbcspringbootapp.model.enums.TRANSACTION_DIRECTIONS;
+import com.example.jdbcspringbootapp.model.enums.Transaction_Directions;
 import lombok.*;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdateTransactionRespDto extends BaseFieldsResponseDTO {
-    private TRANSACTION_DIRECTIONS direction;
+    private Transaction_Directions direction;
     private BigDecimal amount;
     private Long cardId;
     private Long currencyId;

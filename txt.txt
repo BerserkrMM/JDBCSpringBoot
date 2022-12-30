@@ -1,0 +1,53 @@
+ //spring boot:
+    implementation("org.springframework.boot:spring-boot-starter-web:$springBootVersion")
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+
+    //db - spring jdbc:
+    implementation("org.springframework.boot:spring-boot-starter-jdbc:$springBootVersion")
+    runtimeOnly("com.microsoft.sqlserver:mssql-jdbc")
+
+    //actuator:
+    implementation("org.springframework.boot:spring-boot-starter-actuator:$springBootVersion")
+    implementation("io.micrometer:micrometer-registry-prometheus:1.5.2")
+
+    //lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor "org.projectlombok:lombok:$lombokVersion"
+
+    //mapper - mapstruct:
+    implementation("org.mapstruct:mapstruct:$mapstructVersion")
+    annotationProcessor("org.mapstruct:mapstruct-processor:$mapstructVersion")
+    testAnnotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+
+    //swagger:
+    implementation("io.springfox:springfox-swagger-ui:$swaggerVersion")
+    implementation("io.springfox:springfox-spring-web:$swaggerVersion")
+    implementation("io.springfox:springfox-swagger2:$swaggerVersion") {
+        exclude group: 'org.mapstruct', module: 'mapstruct'
+    }
+
+    //==============added 171222====================
+    implementation ('org.springframework.boot:spring-boot-gradle-plugin:1.5.3.RELEASE')
+    implementation ('com.benjaminsproule:swagger-gradle-plugin:0.0.6')
+    //was
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.jetbrains:annotations:20.1.0'
+    runtimeOnly 'com.microsoft.sqlserver:mssql-jdbc'
+    runtimeOnly 'org.postgresql:postgresql'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    //added
+    implementation "org.springframework.boot:spring-boot-devtools"
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+    implementation "com.h2database:h2"
+    implementation "org.springframework.boot:spring-boot-dependencies:${springBootDependenciesVersion}"
+
+    // test
+    testImplementation ("com.intellij:annotations:+@jar")
+    testImplementation ("org.apache.httpcomponents:httpclient")
+    testImplementation ("org.testcontainers:junit-jupiter:${testcontainersVersion}")
+    testImplementation ("org.testcontainers:mssqlserver:${testcontainersVersion}")
+    testImplementation ("org.mockito:mockito-core:3.+")
+    testImplementation("org.springframework.boot:spring-boot-starter-test") {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+    testImplementation 'org.testcontainers:mssqlserver'

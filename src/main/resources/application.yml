@@ -9,10 +9,11 @@ spring:
   application:
     name: ${project.name}
   datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/Wallet
-    username: postgres
-    password: 123
+    hikari:
+      driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+      jdbc-url: jdbc:sqlserver://localhost;
+      username: SA
+      password: Password#1
   profiles:
     active: dev
   #added 171222

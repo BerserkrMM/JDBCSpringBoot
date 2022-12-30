@@ -1,55 +1,39 @@
+dependencyManagement {
+    dependencies {
+        imports {
+            mavenBom "org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion"
+            mavenBom "org.springframework.boot:spring-boot-dependencies:$springBootVersion"
+        }
+        dependency ("org.testcontainers:mssqlserver:$testcontainersMssqlserverVersion")
+    }
+}
+
 dependencies {
-    //spring boot:
-    implementation("org.springframework.boot:spring-boot-starter-web:$springBootVersion")
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
-    //db - spring jdbc:
-    implementation("org.springframework.boot:spring-boot-starter-jdbc:$springBootVersion")
-    runtimeOnly("com.microsoft.sqlserver:mssql-jdbc")
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation "org.springframework.boot:spring-boot-starter-jdbc"
+    implementation 'org.springframework:spring-context-support'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.passay:passay:1.6.2'
 
-    //actuator:
-    implementation("org.springframework.boot:spring-boot-starter-actuator:$springBootVersion")
-    implementation("io.micrometer:micrometer-registry-prometheus:1.5.2")
+    implementation "org.hibernate:hibernate-validator:$hibernateValidatorVersion"
 
-    //lombok
+    implementation "io.springfox:springfox-swagger-ui:$swaggerVersion"
+    implementation "io.springfox:springfox-spring-web:$swaggerVersion"
+    implementation "io.springfox:springfox-swagger2:$swaggerVersion"
+
     compileOnly 'org.projectlombok:lombok'
+    runtimeOnly 'com.microsoft.sqlserver:mssql-jdbc'
+    runtimeOnly 'com.h2database:h2'
     annotationProcessor "org.projectlombok:lombok:$lombokVersion"
 
-    //mapper - mapstruct:
-    implementation("org.mapstruct:mapstruct:$mapstructVersion")
-    annotationProcessor("org.mapstruct:mapstruct-processor:$mapstructVersion")
-    testAnnotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
-
-    //swagger:
-    implementation("io.springfox:springfox-swagger-ui:$swaggerVersion")
-    implementation("io.springfox:springfox-spring-web:$swaggerVersion")
-    implementation("io.springfox:springfox-swagger2:$swaggerVersion") {
-        exclude group: 'org.mapstruct', module: 'mapstruct'
-    }
-
-    //==============added 171222====================
-    implementation ('org.springframework.boot:spring-boot-gradle-plugin:1.5.3.RELEASE')
-    implementation ('com.benjaminsproule:swagger-gradle-plugin:0.0.6')
-    //was
-    implementation 'org.springframework.boot:spring-boot-starter'
-    implementation 'org.jetbrains:annotations:20.1.0'
-    runtimeOnly 'com.microsoft.sqlserver:mssql-jdbc'
-    runtimeOnly 'org.postgresql:postgresql'
+    testImplementation "org.mockito:mockito-inline"
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    //added
-    implementation "org.springframework.boot:spring-boot-devtools"
-    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
-    implementation "com.h2database:h2"
-    implementation "org.springframework.boot:spring-boot-dependencies:${springBootDependenciesVersion}"
-
-    // test
-    testImplementation ("com.intellij:annotations:+@jar")
-    testImplementation ("org.apache.httpcomponents:httpclient")
-    testImplementation ("org.testcontainers:junit-jupiter:${testcontainersVersion}")
-    testImplementation ("org.testcontainers:mssqlserver:${testcontainersVersion}")
-    testImplementation ("org.mockito:mockito-core:3.+")
-    testImplementation("org.springframework.boot:spring-boot-starter-test") {
-        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    testImplementation("com.github.tomakehurst:wiremock:$wireMockVersion") {
+        exclude group: 'org.ow2.asm', module: 'asm'
     }
     testImplementation 'org.testcontainers:mssqlserver'
+    testCompileOnly("org.projectlombok:lombok:$lombokVersion")
+    testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion")
 }

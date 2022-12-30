@@ -10,8 +10,8 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateCardReqDto {
-    private BigDecimal amount = null;
-    private Long currencyId = null;
-    private String cardName = null;
-    private String bankName = null;
+    private BigDecimal amount;
+    private Long currencyId;
+    private String cardName;
+    private String bankName;
 }

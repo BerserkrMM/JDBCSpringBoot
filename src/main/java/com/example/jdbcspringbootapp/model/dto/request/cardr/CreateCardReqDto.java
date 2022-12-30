@@ -13,13 +13,13 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class CreateCardReqDto {
     @NotNull
-    private BigDecimal amount = BigDecimal.valueOf(0); //set ZERO by default!!!
+    private BigDecimal amount;
 
     @NotNull
     private Long currencyId;
 
     @NotNull
-    private String cardName = "Card " + this.hashCode();
+    private String cardName;
 
     @NotNull
     private String bankName;

@@ -7,8 +7,8 @@ import com.example.jdbcspringbootapp.model.dto.response.currency.*;
 public interface CurrencyService {
 
     ResponseDto<CreateCurrencyRespDto> createCurrency(CreateCurrencyReqDto createCurrencyReqDto) throws IllegalAccessException;
-    GetCurrencyRespDto getCurrencyById(Long id);
-    GetFirstCurrencyRespDto getFirstCurrency();
-    DeleteCurrencyRespDto deleteCurrencyById(Long id);
-    UpdateCurrencyRespDto updateCurrencyById(Long id, UpdateCurrencyReqDto updateCurrencyReqDto);
+    ResponseDto<GetCurrencyRespDto> getCurrencyById(Long id);
+    ResponseDto<GetFirstCurrencyRespDto> getFirstCurrency();
+    ResponseDto<DeleteCurrencyRespDto> deleteCurrencyById(Long id) throws IllegalAccessException;
+    ResponseDto<UpdateCurrencyRespDto> updateCurrencyById(Long id, UpdateCurrencyReqDto updateCurrencyReqDto) throws IllegalAccessException;
 }

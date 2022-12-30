@@ -14,4 +14,6 @@ public interface CurrencyRepository extends JdbcExceptionWrappingRepository {
     Optional<DeleteCurrencyRespDto> deleteCurrencyById(Long id);
     Optional<UpdateCurrencyRespDto> updateCurrencyById(Long id, UpdateCurrencyReqDto updateCurrencyReqDto);
     Optional<Long> tryExistenceByCode(String code);
+    Optional<String> tryExistenceById(Long id);
+    boolean isDeletedById(Long id);
 }

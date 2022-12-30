@@ -1,7 +1,10 @@
 package com.example.jdbcspringbootapp.repository.currency;
 
-import com.example.jdbcspringbootapp.model.dto.request.currency.*;
+import com.example.jdbcspringbootapp.model.dto.request.currency.CreateCurrencyReqDto;
+import com.example.jdbcspringbootapp.model.dto.request.currency.UpdateCurrencyReqDto;
 import com.example.jdbcspringbootapp.model.dto.response.currency.*;
+import com.example.jdbcspringbootapp.service.currency.CurrencyService;
+import com.example.jdbcspringbootapp.service.currency.CurrencyServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
@@ -32,12 +35,8 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
                 .addValue("code", createCurrencyReqDto.getCode())
                 .addValue("exchangeRateToUSD", createCurrencyReqDto.getExchangeRateToUSD());
 
-        try {
-            return Optional.ofNullable(namedParameterJdbcTemplate
-                    .queryForObject(sql, params, new BeanPropertyRowMapper<>(CreateCurrencyRespDto.class)));
-        } catch (DataAccessException e) {
-            return Optional.empty();
-        }
+        return executeQueryWithOptionalResult(() -> (namedParameterJdbcTemplate
+                .queryForObject(sql, params, new BeanPropertyRowMapper<>(CreateCurrencyRespDto.class))));
     }
 
     @Override
@@ -46,27 +45,19 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
         var params = new MapSqlParameterSource()
                 .addValue("id", id);
 
-        try {
-            return Optional.ofNullable(namedParameterJdbcTemplate
-                    .queryForObject(sql, params, new BeanPropertyRowMapper<>(GetCurrencyRespDto.class)));
-        } catch (DataAccessException e) {
-            return Optional.empty();
-        }
+        return executeQueryWithOptionalResult(() -> (namedParameterJdbcTemplate
+                .queryForObject(sql, params, new BeanPropertyRowMapper<>(GetCurrencyRespDto.class))));
     }
 
     @Override
     public Optional<GetFirstCurrencyRespDto> getFirstCurrency() {
         var sql = "SELECT * FROM dbo.currency LIMIT 1";
-        try {
-            return Optional.ofNullable(namedParameterJdbcTemplate
-                    .queryForObject(sql
-                            , new MapSqlParameterSource()
-                            , new BeanPropertyRowMapper<>(GetFirstCurrencyRespDto.class)
-                    ));
 
-        } catch (DataAccessException e) {
-            return Optional.empty();
-        }
+        return executeQueryWithOptionalResult(() -> (namedParameterJdbcTemplate
+                .queryForObject(sql
+                        , new MapSqlParameterSource()
+                        , new BeanPropertyRowMapper<>(GetFirstCurrencyRespDto.class)
+                )));
     }
 
     // write logic for delition
@@ -75,12 +66,9 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
         var sqlDel = "DELETE FROM dbo.currency WHERE id=:id RETURNING *";
         var params = new MapSqlParameterSource()
                 .addValue("id", id);
-        try {
-            return Optional.ofNullable(namedParameterJdbcTemplate
-                    .queryForObject(sqlDel, params, new BeanPropertyRowMapper<>(DeleteCurrencyRespDto.class)));
-        } catch (DataAccessException e) {
-            return Optional.empty();
-        }
+
+        return executeQueryWithOptionalResult(() -> (namedParameterJdbcTemplate
+                .queryForObject(sqlDel, params, new BeanPropertyRowMapper<>(DeleteCurrencyRespDto.class))));
     }
 
     @Override
@@ -135,6 +123,23 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("code", code);
 
-        return executeQueryWithOptionalResult(()->namedParameterJdbcTemplate.queryForObject(sql,params,Long.class));
+        return executeQueryWithOptionalResult(() -> namedParameterJdbcTemplate.queryForObject(sql, params, Long.class));
+    }
+
+    @Override
+    public Optional<String> tryExistenceById(Long id) {
+
+        String sql = "SELECT code FROM dbo.currency where id = :id";
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("id", id);
+
+        return executeQueryWithOptionalResult(() -> namedParameterJdbcTemplate.queryForObject(sql, params, String.class));
+    }
+
+    @Override
+    public boolean isDeletedById(Long id) {
+        //add column isDeleted, then implement method. Then add isDeleted to all where needed
+        return false;
     }
 }

@@ -32,38 +32,26 @@ public class CurrencyController {
 
     @GetMapping(value = "/get", produces = {V_1})//ex: /get/?id=8
     public ResponseEntity<ResponseDto<GetCurrencyRespDto>> getCurrencyById(@PathParam("id") Long id) {
-        ResponseDto<GetCurrencyRespDto> answer = new ResponseDto<>();
-        answer.setData(currencyService.getCurrencyById(id));
-        answer.setStatus(Status.OK);
-        return ResponseEntity.ok(answer);
+        return ResponseEntity.ok(currencyService.getCurrencyById(id));
     }
 
 
     @GetMapping(value = "/getFirstCurrency")
     public ResponseEntity<ResponseDto<GetFirstCurrencyRespDto>> getFirstCurrency() {
-        ResponseDto<GetFirstCurrencyRespDto> answer = new ResponseDto<>();
-        answer.setData(currencyService.getFirstCurrency());
-        answer.setStatus(Status.OK);
-        return ResponseEntity.ok(answer);
+        return ResponseEntity.ok(currencyService.getFirstCurrency());
     }
 
 
     @DeleteMapping(value = "/del")
-    public ResponseEntity<ResponseDto<DeleteCurrencyRespDto>> deleteCurrencyById(@PathParam("id") Long id) {
-        ResponseDto<DeleteCurrencyRespDto> answer = new ResponseDto<>();
-        answer.setData(currencyService.deleteCurrencyById(id));
-        answer.setStatus(Status.OK);
-        return ResponseEntity.ok(answer);
+    public ResponseEntity<ResponseDto<DeleteCurrencyRespDto>> deleteCurrencyById(@PathParam("id") Long id) throws IllegalAccessException {
+        return ResponseEntity.ok(currencyService.deleteCurrencyById(id));
     }
 
 
     @PatchMapping(value = "/update", headers = "content-type=application/vnd.api+json")
     public ResponseEntity<ResponseDto<UpdateCurrencyRespDto>> updateCurrencyById(
             @PathParam("id") Long id,
-            @RequestBody UpdateCurrencyReqDto updateCurrencyReqDto) {
-        ResponseDto<UpdateCurrencyRespDto> answer = new ResponseDto<>();
-        answer.setData(currencyService.updateCurrencyById(id, updateCurrencyReqDto));
-        answer.setStatus(Status.OK);
-        return ResponseEntity.ok(answer);
+            @RequestBody UpdateCurrencyReqDto updateCurrencyReqDto) throws IllegalAccessException {
+        return ResponseEntity.ok(currencyService.updateCurrencyById(id, updateCurrencyReqDto));
     }
 }

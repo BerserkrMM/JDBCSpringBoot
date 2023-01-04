@@ -3,8 +3,6 @@ package com.example.jdbcspringbootapp.repository.currency;
 import com.example.jdbcspringbootapp.model.dto.request.currency.CreateCurrencyReqDto;
 import com.example.jdbcspringbootapp.model.dto.request.currency.UpdateCurrencyReqDto;
 import com.example.jdbcspringbootapp.model.dto.response.currency.*;
-import com.example.jdbcspringbootapp.service.currency.CurrencyService;
-import com.example.jdbcspringbootapp.service.currency.CurrencyServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
@@ -51,7 +49,7 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
 
     @Override
     public Optional<GetFirstCurrencyRespDto> getFirstCurrency() {
-        var sql = "SELECT * FROM dbo.currency LIMIT 1";
+        var sql = "SELECT TOP 1 * FROM dbo.Currencies";
 
         return executeQueryWithOptionalResult(() -> (namedParameterJdbcTemplate
                 .queryForObject(sql

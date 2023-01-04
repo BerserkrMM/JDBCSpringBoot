@@ -16,10 +16,10 @@ public class DeleteCardRespDto extends BaseFieldsResponseDTO {
 
     private BigDecimal amount; //set ZERO by default!!!
 
-    private Long currencyId;
+    private Long currency_id;
 
-    private String cardName;
+    private String name;
 
-    private String bankName;
+    private String bank_name;
 
 }

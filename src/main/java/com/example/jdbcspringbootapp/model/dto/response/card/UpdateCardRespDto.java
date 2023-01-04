@@ -14,12 +14,12 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 public class UpdateCardRespDto extends BaseFieldsResponseDTO {
 
-    private BigDecimal amount; //set ZERO by default!!!
+    private BigDecimal amount;
 
-    private Long currencyId;
+    private Long currency_id;
 
-    private String cardName;
+    private String name;
 
-    private String bankName;
+    private String bank_name;
 
 }

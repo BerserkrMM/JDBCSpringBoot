@@ -1,15 +1,17 @@
 package com.example.jdbcspringbootapp.service.card;
 
 import com.example.jdbcspringbootapp.model.dto.request.cardr.*;
+import com.example.jdbcspringbootapp.model.dto.response.ResponseDto;
 import com.example.jdbcspringbootapp.model.dto.response.card.*;
+import com.example.jdbcspringbootapp.service.utils.ResponseIfOptionalIsOrNotEmpty;
 import org.springframework.stereotype.Service;
 
 @Service
-public interface CardService {
+public interface CardService extends ResponseIfOptionalIsOrNotEmpty {
 
-    CreateCardRespDto createCard(CreateCardReqDto createCardReqDto);
-    GetCardRespDto getCardById(Long id);
-    GetFirstCardRespDto getFirstCard();
-    DeleteCardRespDto deleteCardById(Long id);
-    UpdateCardRespDto updateCardById(Long id, UpdateCardReqDto updateCardReqDto);
+    ResponseDto<CreateCardRespDto> createCard(CreateCardReqDto createCardReqDto) throws IllegalAccessException;
+    ResponseDto<GetCardRespDto> getCardById(Long id);
+    ResponseDto<GetFirstCardRespDto> getFirstCard();
+    ResponseDto<DeleteCardRespDto> deleteCardById(Long id);
+    ResponseDto<UpdateCardRespDto> updateCardById(Long id, UpdateCardReqDto updateCardReqDto);
 }

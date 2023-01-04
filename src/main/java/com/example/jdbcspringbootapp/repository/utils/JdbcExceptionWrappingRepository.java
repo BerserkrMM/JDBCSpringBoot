@@ -29,7 +29,7 @@ public interface JdbcExceptionWrappingRepository {
             return Optional.empty();
         } catch (Exception e) {
             log.error(DATABASE_ERROR_MSG, e);
-            throw new DatabaseOperationException(DATABASE_ERROR_MSG);
+            throw new DatabaseOperationException(DATABASE_ERROR_MSG+":\n"+e.getMessage());
         }
     }
 }

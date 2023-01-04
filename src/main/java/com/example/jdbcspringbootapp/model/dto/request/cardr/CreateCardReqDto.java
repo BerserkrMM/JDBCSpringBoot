@@ -16,11 +16,11 @@ public class CreateCardReqDto {
     private BigDecimal amount;
 
     @NotNull
-    private Long currencyId;
+    private Long currency_id;
 
     @NotNull
-    private String cardName;
+    private String name;
 
     @NotNull
-    private String bankName;
+    private String bank_name;
 }

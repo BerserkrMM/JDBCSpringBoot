@@ -35,18 +35,15 @@ public class CurrencyController {
         return ResponseEntity.ok(currencyService.getCurrencyById(id));
     }
 
-
     @GetMapping(value = "/getFirstCurrency")
     public ResponseEntity<ResponseDto<GetFirstCurrencyRespDto>> getFirstCurrency() {
         return ResponseEntity.ok(currencyService.getFirstCurrency());
     }
 
-
     @DeleteMapping(value = "/del")
     public ResponseEntity<ResponseDto<DeleteCurrencyRespDto>> deleteCurrencyById(@PathParam("id") Long id) throws IllegalAccessException {
         return ResponseEntity.ok(currencyService.deleteCurrencyById(id));
     }
-
 
     @PatchMapping(value = "/update", headers = "content-type=application/vnd.api+json")
     public ResponseEntity<ResponseDto<UpdateCurrencyRespDto>> updateCurrencyById(

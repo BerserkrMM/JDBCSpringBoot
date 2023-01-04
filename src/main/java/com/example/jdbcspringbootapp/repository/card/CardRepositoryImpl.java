@@ -1,9 +1,9 @@
 package com.example.jdbcspringbootapp.repository.card;
 
-import com.example.jdbcspringbootapp.model.dto.request.cardr.*;
+import com.example.jdbcspringbootapp.model.dto.request.cardr.CreateCardReqDto;
+import com.example.jdbcspringbootapp.model.dto.request.cardr.UpdateCardReqDto;
 import com.example.jdbcspringbootapp.model.dto.response.card.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -12,7 +12,6 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -21,112 +20,102 @@ public class CardRepositoryImpl implements CardRepository {
 
     @Override
     public Optional<CreateCardRespDto> createCard(CreateCardReqDto createCardReqDto) {
-        var sql = "INSERT INTO dbo.cards                        "
-                + "(amount, currencyId, cardName, bankName)     "
-                + "VALUES                                       "
-                + "(:amount, :currencyId, :cardname, :bankname) "
-                + " RETURNING *                                 ";
+        var sql = "INSERT INTO dbo.Cards                              "
+                + "(amount, currency_id, name, bank_name)             "
+                + "VALUES                                             "
+                + "(:amount, :currency_id, :name, :bank_name);        "
+                + "SELECT * FROM dbo.Cards WHERE id = SCOPE_IDENTITY()";
         var params = new MapSqlParameterSource()
                 .addValue("amount", createCardReqDto.getAmount())
-                .addValue("cardname", createCardReqDto.getCardName())
-                .addValue("bankname", createCardReqDto.getBankName())
-                .addValue("currencyId", createCardReqDto.getCurrencyId());
+                .addValue("name", createCardReqDto.getName())
+                .addValue("bank_name", createCardReqDto.getBank_name())
+                .addValue("currency_id", createCardReqDto.getCurrency_id());
 
-        try {
-            return Optional.ofNullable(namedParameterJdbcTemplate
-                    .queryForObject(sql, params, new BeanPropertyRowMapper<>(CreateCardRespDto.class)));
-        } catch (DataAccessException e) {
-            return Optional.empty();
-        }
+        return executeQueryWithOptionalResult(() -> namedParameterJdbcTemplate
+                .queryForObject(sql, params, new BeanPropertyRowMapper<>(CreateCardRespDto.class)));
     }
 
     @Override
     public Optional<GetCardRespDto> getCardById(Long id) {
-        var sql = "SELECT * FROM dbo.cards WHERE id=:id";
+        var sql = "SELECT * FROM dbo.Cards WHERE id = :id";
         var params = new MapSqlParameterSource()
                 .addValue("id", id);
 
-        try {
-            return Optional.ofNullable(namedParameterJdbcTemplate
-                    .queryForObject(sql, params, new BeanPropertyRowMapper<>(GetCardRespDto.class)));
-        } catch (DataAccessException e) {
-            return Optional.empty();
-        }
+        return executeQueryWithOptionalResult(() -> namedParameterJdbcTemplate
+                .queryForObject(sql, params, new BeanPropertyRowMapper<>(GetCardRespDto.class)));
     }
 
     @Override
     public Optional<GetFirstCardRespDto> getFirstCard() {
-        var sql = "SELECT * FROM dbo.cards LIMIT 1";
-        try {
-            return Optional.ofNullable(namedParameterJdbcTemplate
-                    .queryForObject(sql
-                            ,new MapSqlParameterSource()
-                            ,new BeanPropertyRowMapper<>(GetFirstCardRespDto.class)
-                    ));
-
-        }
-        catch (DataAccessException e) {
-            return Optional.empty();
-        }
+        var sql = "SELECT TOP 1 * FROM dbo.Cards";
+        return executeQueryWithOptionalResult(() -> namedParameterJdbcTemplate
+                .queryForObject(sql
+                        , new MapSqlParameterSource()
+                        , new BeanPropertyRowMapper<>(GetFirstCardRespDto.class)));
     }
 
     @Override
     public Optional<DeleteCardRespDto> deleteCardById(Long id) {
-        var sqlDel = "DELETE FROM dbo.cards WHERE id=:id RETURNING *";
+        var sqlDel =  "delete dbo.Cards                                                                      "
+                    + "output deleted.id, deleted.amount, deleted.name, deleted.bank_name,                   "
+                    + "       deleted.currency_id, deleted.guid, deleted.created_time, deleted.modified_time "
+                    + "where id = :id                                                                        ";
         var params = new MapSqlParameterSource()
                 .addValue("id", id);
-        try {
-            return Optional.ofNullable(namedParameterJdbcTemplate
-                    .queryForObject(sqlDel, params, new BeanPropertyRowMapper<>(DeleteCardRespDto.class)));
-        } catch (DataAccessException e) {
-            return Optional.empty();
-        }
+        return executeQueryWithOptionalResult(() -> namedParameterJdbcTemplate
+                .queryForObject(sqlDel, params, new BeanPropertyRowMapper<>(DeleteCardRespDto.class)));
     }
 
     @Override
     //Returning old object
     public Optional<UpdateCardRespDto> updateCardById(Long id, UpdateCardReqDto updateCardReqDto) {
-        var sqlGet = "SELECT * FROM dbo.cards WHERE id=:id";
-        var paramsSqlGet = new MapSqlParameterSource()
+        var paramsForSqlSource = new MapSqlParameterSource()
                 .addValue("id", id);
-        UpdateCardRespDto oldCardUpdtRespDto;
-        try {
-            oldCardUpdtRespDto = namedParameterJdbcTemplate // getting deleting entity
-                    .queryForObject(sqlGet, paramsSqlGet, new BeanPropertyRowMapper<>(UpdateCardRespDto.class));
-        } catch (DataAccessException e) {
-            oldCardUpdtRespDto = null;
-        }
-
-        var paramsSqlUpdate = new MapSqlParameterSource()
-                .addValue("id", id);
-        List<String> params = new ArrayList<>();
+        List<String> paramsForSetClause = new ArrayList<>();
+        List<String> paramsForTempTable = new ArrayList<>();
 
         if (updateCardReqDto.getAmount() != null) {
-            params.add("amount=:amount");
-            paramsSqlUpdate.addValue("amount", updateCardReqDto.getAmount());
+            paramsForTempTable.add("amount bigint");
+            paramsForSetClause.add("amount=:amount");
+            paramsForSqlSource.addValue("amount", updateCardReqDto.getAmount());
         }
-        if (updateCardReqDto.getCardName() != null) {
-            params.add(" cardname=:cardname");
-            paramsSqlUpdate.addValue("cardname", updateCardReqDto.getCardName());
+        if (updateCardReqDto.getName() != null) {
+            paramsForTempTable.add("name varchar(50)");
+            paramsForSetClause.add(" name=:cardname");
+            paramsForSqlSource.addValue("cardname", updateCardReqDto.getName());
         }
-        if (updateCardReqDto.getCurrencyId() != null) {
-            params.add(" currencyId=:currencyId");
-            paramsSqlUpdate.addValue("currencyId", updateCardReqDto.getCurrencyId());
+        if (updateCardReqDto.getCurrency_id() != null) {
+            paramsForTempTable.add("currency_id bigint");
+            paramsForSetClause.add(" currency_id=:currencyId");
+            paramsForSqlSource.addValue("currencyId", updateCardReqDto.getCurrency_id());
         }
-        if (updateCardReqDto.getBankName() != null) {
-            params.add(" bankname=:bankname");
-            paramsSqlUpdate.addValue("bankname", updateCardReqDto.getBankName());
+        if (updateCardReqDto.getBank_name() != null) {
+            paramsForTempTable.add("bank_name varchar(50)");
+            paramsForSetClause.add(" bank_name=:bankname");
+            paramsForSqlSource.addValue("bankname", updateCardReqDto.getBank_name());
         }
 
-        var sqlUpdate =   "UPDATE dbo.cards SET                                             "
-                        +  params.stream().collect(Collectors.joining(","))
-                        + ", uuid=gen_random_uuid(), modified_timestamp = current_timestamp "
-                        + "WHERE id=:id                                                     ";
-        try {
-            namedParameterJdbcTemplate.update(sqlUpdate, paramsSqlUpdate);
-            return Optional.ofNullable(oldCardUpdtRespDto);
-        } catch (DataAccessException e) {
-            return Optional.empty();
-        }
+        var sqlSource =   "declare @TempTable table(id bigint                 , guid uniqueidentifier     "
+                        + "                       , created_time  datetime2(3), modified_time datetime2(3)"
+                        + "                       , amount bigint             , name varchar(50)          "
+                        + "                       , bank_name varchar(50)     , currency_id bigint       )"
+                        + " update dbo.Cards set " + String.join(",", paramsForSetClause)
+                        + " output deleted.id          , deleted.guid                                     "
+                        + "      , deleted.created_time, deleted.modified_time                            "
+                        + "      , deleted.amount      , deleted.name                                     "
+                        + "      , deleted.bank_name   , deleted.currency_id                              "
+                        + " into @TempTable                                                               "
+                        + " where id=:id;                                                                 "
+                        + " select * from @TempTable                                                      ";
+        return executeQueryWithOptionalResult(()->namedParameterJdbcTemplate.queryForObject(
+                sqlSource,paramsForSqlSource,new BeanPropertyRowMapper<>(UpdateCardRespDto.class)));
+    }
+
+    @Override
+    public Optional<Long> tryExistenceByName(String cardName) {
+        String sql = "SELECT id FROM dbo.Cards WHERE name=:name";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("name", cardName);
+        return executeQueryWithOptionalResult(() -> namedParameterJdbcTemplate.queryForObject(sql, params, Long.class));
     }
 }

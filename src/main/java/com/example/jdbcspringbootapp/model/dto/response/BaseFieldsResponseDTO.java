@@ -9,7 +9,7 @@ import java.util.UUID;
 @Setter
 public abstract class BaseFieldsResponseDTO {
     private Long id;
-    private UUID uuid;
-    private String created_timestamp;
-    private String modified_timestamp;
+    private UUID guid;
+    private String created_time;
+    private String modified_time;
 }

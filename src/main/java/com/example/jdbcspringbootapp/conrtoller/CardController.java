@@ -43,7 +43,7 @@ public class CardController {
 
     @ApiOperation("deleteCardById.")
     @DeleteMapping(value = "/del")
-    public ResponseEntity<ResponseDto<DeleteCardRespDto>> deleteCardById(@PathParam("id") Long id) {
+    public ResponseEntity<ResponseDto<DeleteCardRespDto>> deleteCardById(@PathParam("id") Long id) throws IllegalAccessException {
         return ResponseEntity.ok(cardService.deleteCardById(id));
     }
 
@@ -51,7 +51,7 @@ public class CardController {
     @PatchMapping(value = "/update", headers = "content-type=application/vnd.api+json")
     public ResponseEntity<ResponseDto<UpdateCardRespDto>> updateCardById(
             @PathParam("id") Long id,
-            @RequestBody UpdateCardReqDto updateCardReqDto) {
+            @RequestBody UpdateCardReqDto updateCardReqDto) throws IllegalAccessException {
         return ResponseEntity.ok(cardService.updateCardById(id, updateCardReqDto));
     }
 }

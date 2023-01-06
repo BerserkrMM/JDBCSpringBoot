@@ -14,5 +14,6 @@ public interface CardRepository extends JdbcExceptionWrappingRepository {
     Optional<GetFirstCardRespDto> getFirstCard();
     Optional<DeleteCardRespDto> deleteCardById(Long id);
     Optional<UpdateCardRespDto> updateCardById(Long id, UpdateCardReqDto updateCardReqDto);
-    Optional<Long> tryExistenceByName(String cardName);
+    <C> Optional<C> isPresentByName(String cardName, Class<C> responseClass);
+    <C> Optional<C> isPresentById(Long id, Class<C> responseClass);
 }

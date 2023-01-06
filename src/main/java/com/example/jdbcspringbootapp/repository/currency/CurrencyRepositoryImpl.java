@@ -23,26 +23,24 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
 
     @Override
     public Optional<CreateCurrencyRespDto> createCurrency(CreateCurrencyReqDto createCurrencyReqDto) {
-        var sql = "INSERT INTO dbo.currency           "
-                + "(name, code, exchangeRateToUSD)    "
-                + "VALUES                             "
-                + "(:name, :code, :exchangeRateToUSD) "
-                + " RETURNING *                       ";
+        var sql = "INSERT INTO dbo.Currencies                              "
+                + "(name, code, exchange_rate_to_usd)                      "
+                + "VALUES                                                  "
+                + "(:name, :code, :exchange_rate_to_usd);                  "
+                + "SELECT * FROM dbo.Currencies WHERE id = SCOPE_IDENTITY()";
         var params = new MapSqlParameterSource()
                 .addValue("name", createCurrencyReqDto.getName())
                 .addValue("code", createCurrencyReqDto.getCode())
-                .addValue("exchangeRateToUSD", createCurrencyReqDto.getExchangeRateToUSD());
-
+                .addValue("exchange_rate_to_usd", createCurrencyReqDto.getExchange_rate_to_usd());
         return executeQueryWithOptionalResult(() -> (namedParameterJdbcTemplate
                 .queryForObject(sql, params, new BeanPropertyRowMapper<>(CreateCurrencyRespDto.class))));
     }
 
     @Override
     public Optional<GetCurrencyRespDto> getCurrencyById(Long id) {
-        var sql = "SELECT * FROM dbo.currency WHERE id=:id";
+        var sql = "SELECT * FROM dbo.Currencies WHERE id=:id";
         var params = new MapSqlParameterSource()
                 .addValue("id", id);
-
         return executeQueryWithOptionalResult(() -> (namedParameterJdbcTemplate
                 .queryForObject(sql, params, new BeanPropertyRowMapper<>(GetCurrencyRespDto.class))));
     }
@@ -58,13 +56,14 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
                 )));
     }
 
-    // write logic for delition
     @Override
     public Optional<DeleteCurrencyRespDto> deleteCurrencyById(Long id) {
-        var sqlDel = "DELETE FROM dbo.currency WHERE id=:id RETURNING *";
+        var sqlDel = " delete dbo.Currencies                                                       "
+                   + " output deleted.id, deleted.guid, deleted.created_time, deleted.modified_time"
+                   + ", deleted.name, deleted.code, deleted.exchange_rate_to_usd                   "
+                   + " where id = :idCur                                                           ";
         var params = new MapSqlParameterSource()
-                .addValue("id", id);
-
+                .addValue("idCur", id);
         return executeQueryWithOptionalResult(() -> (namedParameterJdbcTemplate
                 .queryForObject(sqlDel, params, new BeanPropertyRowMapper<>(DeleteCurrencyRespDto.class))));
     }
@@ -72,72 +71,57 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
     @Override
     //Returning old object
     public Optional<UpdateCurrencyRespDto> updateCurrencyById(Long id, UpdateCurrencyReqDto updateCurrencyReqDto) {
-        var sqlGet = "SELECT * FROM dbo.currency WHERE id=:id";
-        var paramsSqlGet = new MapSqlParameterSource()
+        var paramsForSqlSource = new MapSqlParameterSource()
                 .addValue("id", id);
-        UpdateCurrencyRespDto oldCurrencyUpdtRespDto;
-        try {
-            oldCurrencyUpdtRespDto = namedParameterJdbcTemplate // getting deleting entity
-                    .queryForObject(sqlGet, paramsSqlGet, new BeanPropertyRowMapper<>(UpdateCurrencyRespDto.class));
-        } catch (DataAccessException e) {
-            oldCurrencyUpdtRespDto = null;
-        }
-
-        var paramsSqlUpdate = new MapSqlParameterSource()
-                .addValue("id", id);
-        List<String> params = new ArrayList<>();
+        List<String> paramsForSetClause = new ArrayList<>();
 
         if (updateCurrencyReqDto.getName() != null) {
-            params.add("name=:name");
-            paramsSqlUpdate.addValue("name", updateCurrencyReqDto.getName());
+            paramsForSetClause.add(" name= '" + updateCurrencyReqDto.getName() + "' ");
         }
         if (updateCurrencyReqDto.getCode() != null) {
-            params.add(" code=:code");
-            paramsSqlUpdate.addValue("code", updateCurrencyReqDto.getCode());
+            paramsForSetClause.add("code= '" + updateCurrencyReqDto.getCode() + "' ");
         }
         if (updateCurrencyReqDto.getExchangeRateToUSD() != null) {
-            params.add(" exchangeRateToUSD=:exchangeRateToUSD");
-            paramsSqlUpdate.addValue("exchangeRateToUSD", updateCurrencyReqDto.getExchangeRateToUSD());
+            paramsForSetClause.add(" exchange_rate_to_usd=" + updateCurrencyReqDto.getExchangeRateToUSD());
         }
 
-        var sqlUpdate = "UPDATE dbo.currency SET                                          "
-                + String.join(",", params)
-                + ", uuid=gen_random_uuid(), modified_timestamp = current_timestamp "
-                + "WHERE id=:id                                                     ";
-        try {
-            namedParameterJdbcTemplate.update(sqlUpdate, paramsSqlUpdate);
-            return Optional.ofNullable(oldCurrencyUpdtRespDto);
-        } catch (DataAccessException e) {
-            e.getStackTrace();
-            return Optional.empty();
-        }
+        var sqlSource =   "declare @TempTable table(id bigint                 , guid uniqueidentifier     "
+                        + "                       , created_time  datetime2(3), modified_time datetime2(3)"
+                        + "                       , name varchar(50)          , code varchar(50)          "
+                        + "                       , exchange_rate_to_usd numeric                         )"
+                        + " update dbo.Currencies set " + String.join(",", paramsForSetClause)
+                        + " output deleted.id          , deleted.guid , deleted.created_time              "
+                        + "      , deleted.modified_time, deleted.exchange_rate_to_usd                    "
+                        + " into @TempTable                                                               "
+                        + " where id=:id;                                                                 "
+                        + " select * from @TempTable                                                      ";
+
+        return executeQueryWithOptionalResult(() -> namedParameterJdbcTemplate
+                .queryForObject(sqlSource, paramsForSqlSource, new BeanPropertyRowMapper<>(UpdateCurrencyRespDto.class)));
     }
 
     @Override
-    public Optional<Long> tryExistenceByCode(String code) {
-
-        String sql = "SELECT id FROM dbo.currency where Code = :code";
-
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("code", code);
-
-        return executeQueryWithOptionalResult(() -> namedParameterJdbcTemplate.queryForObject(sql, params, Long.class));
+    public <C> Optional<C> isPresentById(Long id, Class<C> responseClassToMapOn) {
+        String sql = "SELECT * FROM dbo.Currencies WHERE id=:id";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("id", id);
+        return executeQueryWithOptionalResult(() -> namedParameterJdbcTemplate
+                .queryForObject(sql, params, new BeanPropertyRowMapper<>(responseClassToMapOn)));
     }
-
     @Override
-    public Optional<String> tryExistenceById(Long id) {
-
-        String sql = "SELECT code FROM dbo.currency where id = :id";
-
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("id", id);
-
-        return executeQueryWithOptionalResult(() -> namedParameterJdbcTemplate.queryForObject(sql, params, String.class));
+    public <C> Optional<C> isPresentByName(String cardName, Class<C> responseClassToMapOn) {
+        String sql = "SELECT * FROM dbo.Currencies WHERE name=:name";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("name", cardName);
+        return executeQueryWithOptionalResult(() -> namedParameterJdbcTemplate
+                .queryForObject(sql, params, new BeanPropertyRowMapper<>(responseClassToMapOn)));
     }
-
     @Override
-    public boolean isDeletedById(Long id) {
-        //add column isDeleted, then implement method. Then add isDeleted to all where needed
-        return false;
+    public <C> Optional<C> isPresentByCode(String currencyCode, Class<C> responseClassToMapOn) {
+        String sql = "SELECT * FROM dbo.Currencies WHERE code=:code";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("code", currencyCode);
+        return executeQueryWithOptionalResult(() -> namedParameterJdbcTemplate
+                .queryForObject(sql, params, new BeanPropertyRowMapper<>(responseClassToMapOn)));
     }
 }

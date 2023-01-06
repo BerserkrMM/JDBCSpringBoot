@@ -16,5 +16,5 @@ import java.math.BigDecimal;
 public class CreateCurrencyRespDto extends BaseFieldsResponseDTO {
     private String name;
     private String code;
-    private BigDecimal exchangeratetousd;
+    private BigDecimal exchange_rate_to_usd;
 }

@@ -19,5 +19,5 @@ public class CreateCurrencyReqDto {
     private String code;
 
     @NotNull
-    private BigDecimal exchangeRateToUSD;
+    private BigDecimal exchange_rate_to_usd;
 }

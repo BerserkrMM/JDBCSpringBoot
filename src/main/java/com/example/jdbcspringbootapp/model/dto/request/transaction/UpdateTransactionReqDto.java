@@ -13,8 +13,8 @@ import java.math.BigDecimal;
 public class UpdateTransactionReqDto {
     private Transaction_Directions direction;
     private BigDecimal amount;
-    private Long cardId;
-    private Long currencyId;
-    private Long transactionCategoryID;
-    private String infoExtra;
+    private Long card_id;
+    private Long currency_id;
+    private Long transaction_category_id;
+    private String info_extra;
 }

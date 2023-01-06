@@ -39,7 +39,7 @@ class CardServiceImplTest {
         var dto = CreateCurrencyReqDto.builder()
                 .code(code)
                 .name(name)
-                .exchangeRateToUSD(BigDecimal.ONE)
+                .exchange_rate_to_usd(BigDecimal.ONE)
                 .build();
 
         when(currencyRepository.tryExistenceByCode(dto.getCode()))
@@ -70,7 +70,7 @@ class CardServiceImplTest {
         var createdDto = CreateCurrencyRespDto.builder()
                 .code(code)
                 .name(name)
-                .exchangeratetousd(BigDecimal.ONE)
+                .exchange_rate_to_usd(BigDecimal.ONE)
                 .build();
         when(currencyRepository.createCurrency(reqDto)).thenReturn(Optional.of(createdDto));
 

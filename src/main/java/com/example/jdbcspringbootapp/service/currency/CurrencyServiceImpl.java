@@ -21,91 +21,43 @@ public class CurrencyServiceImpl implements CurrencyService {
 
     @Override
     public ResponseDto<CreateCurrencyRespDto> createCurrency(CreateCurrencyReqDto createCurrencyReqDto) throws IllegalAccessException {
-        ResponseDto<CreateCurrencyRespDto> answer = new ResponseDto<>();
-
-        if (repository.tryExistenceByCode(createCurrencyReqDto.getCode()).isPresent()) {
-            throw new IllegalAccessException("Currency with this code already exist.");//зупиниться чи піде далі???
+        if (repository.isPresentByCode(createCurrencyReqDto.getCode(), CreateCurrencyRespDto.class).isPresent()) {
+            throw new IllegalAccessException("Currency with code '"+createCurrencyReqDto.getCode()+"' already exist.");//зупиниться чи піде далі???
         }
-
-        var insertedEnt = repository.createCurrency(createCurrencyReqDto);
-
-        if (insertedEnt.isEmpty()) {
-            answer.setStatus(Status.FAILED);
-            answer.setErrors(List.of(new ErrorDto("Currency is not created.")));
-        } else {
-            answer.setStatus(Status.OK);
-            answer.setData(insertedEnt.get());
+        if (repository.isPresentByName(createCurrencyReqDto.getName(),CreateCurrencyRespDto.class).isPresent()) {
+            throw new IllegalAccessException("Currency with name '"+createCurrencyReqDto.getName()+"' already exist.");//зупиниться чи піде далі???
         }
-        return answer;
+        Optional<CreateCurrencyRespDto> optionalAnswer = repository.createCurrency(createCurrencyReqDto);
+        return setResponseIfOptionalIsOrNotEmpty(optionalAnswer, "Currency is not created.");
     }
 
     @Override
     public ResponseDto<GetCurrencyRespDto> getCurrencyById(Long id) {
-        ResponseDto<GetCurrencyRespDto> answer = new ResponseDto<>();
         Optional<GetCurrencyRespDto> optionalAnswer = repository.getCurrencyById(id);
-        if (optionalAnswer.isEmpty()){
-            answer.setStatus(Status.FAILED);
-            answer.setErrors(List.of(new ErrorDto("No currency found."/*String.format("No currency with ID: ", id)*/)));
-        }
-        else {
-            answer.setStatus(Status.OK);
-            answer.setData(optionalAnswer.get());
-        }
-        return answer;
+        return setResponseIfOptionalIsOrNotEmpty(optionalAnswer, "No currency found.");
     }
 
     @Override
     public ResponseDto<GetFirstCurrencyRespDto> getFirstCurrency() {
-        ResponseDto<GetFirstCurrencyRespDto> answer = new ResponseDto<>();
         Optional<GetFirstCurrencyRespDto> optionalAnswer = repository.getFirstCurrency();
-        if (optionalAnswer.isEmpty()){
-            answer.setStatus(Status.FAILED);
-            answer.setErrors(List.of(new ErrorDto("No currency found."/*String.format("No currency with ID: ", id)*/)));
-        }
-        else {
-            answer.setStatus(Status.OK);
-            answer.setData(optionalAnswer.get());
-        }
-        return answer;
+        return setResponseIfOptionalIsOrNotEmpty(optionalAnswer, "No currency found.");
     }
 
     @Override
     public ResponseDto<DeleteCurrencyRespDto> deleteCurrencyById(Long id) throws IllegalAccessException {
-        ResponseDto<DeleteCurrencyRespDto> answer = new ResponseDto<>();
-
-        if (repository.tryExistenceById(id).isEmpty()) {
+        if (repository.isPresentById(id, DeleteCurrencyRespDto.class).isEmpty()) {
             throw new IllegalAccessException("Currency does not exist.");
         }
-
-        var optionalDeletedEntity = repository.deleteCurrencyById(id);
-
-        if (optionalDeletedEntity.isEmpty()) {
-            answer.setStatus(Status.FAILED);
-            answer.setErrors(List.of(new ErrorDto("Currency is not deleted.")));
-        } else {
-            answer.setStatus(Status.OK);
-            answer.setData(optionalDeletedEntity.get());
-        }
-        return answer;
+        Optional<DeleteCurrencyRespDto> optionalAnswer = repository.deleteCurrencyById(id);
+        return setResponseIfOptionalIsOrNotEmpty(optionalAnswer, "Currency is not deleted.");
     }
 
     @Override
     public ResponseDto<UpdateCurrencyRespDto> updateCurrencyById(Long id, UpdateCurrencyReqDto updateCurrencyReqDto) throws IllegalAccessException {
-        ResponseDto<UpdateCurrencyRespDto> answer = new ResponseDto<>();
-
-        if (repository.tryExistenceById(id).isEmpty()) {
+        if (repository.isPresentById(id, UpdateCurrencyRespDto.class).isEmpty()) {
             throw new IllegalAccessException("Currency does not exist.");
         }
-
-        var optionalUpdatedEntity = repository.updateCurrencyById(id, updateCurrencyReqDto);
-
-        if (optionalUpdatedEntity.isEmpty()) {
-            answer.setStatus(Status.FAILED);
-            answer.setErrors(List.of(new ErrorDto("Currency is not updated.")));
-        } else {
-            answer.setStatus(Status.OK);
-            answer.setData(optionalUpdatedEntity.get());
-        }
-        return answer;
+        Optional<UpdateCurrencyRespDto> optionalAnswer = repository.updateCurrencyById(id, updateCurrencyReqDto);
+        return setResponseIfOptionalIsOrNotEmpty(optionalAnswer, "Currency is not updated.");
     }
 }

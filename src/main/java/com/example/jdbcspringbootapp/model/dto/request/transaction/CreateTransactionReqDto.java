@@ -21,12 +21,12 @@ public class CreateTransactionReqDto {
     private BigDecimal amount;
 
     @NotNull
-    private Long cardId;
+    private Long card_id;
 
     @NotNull
-    private Long currencyId;
+    private Long currency_id;
 
-    private Long transactionCategoryID;
+    private Long transaction_category_id;
 
-    private String infoExtra;
+    private String info_extra;
 }

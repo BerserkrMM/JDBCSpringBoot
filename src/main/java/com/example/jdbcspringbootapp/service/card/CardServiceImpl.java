@@ -17,13 +17,10 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public ResponseDto<CreateCardRespDto> createCard(CreateCardReqDto createCardReqDto) throws IllegalAccessException {
-
-        if (repository.tryExistenceByName(createCardReqDto.getName()).isPresent()) {
+        if (repository.isPresentByName(createCardReqDto.getName(), CreateCardRespDto.class).isPresent()) {
             throw new IllegalAccessException("Card already exist.");
         }
-
-        var optionalAnswer = repository.createCard(createCardReqDto);
-
+        Optional<CreateCardRespDto> optionalAnswer = repository.createCard(createCardReqDto);
         return setResponseIfOptionalIsOrNotEmpty(optionalAnswer,"Card is not created.");
     }
 
@@ -40,15 +37,20 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
-    public ResponseDto<DeleteCardRespDto> deleteCardById(Long id) {
+    public ResponseDto<DeleteCardRespDto> deleteCardById(Long id) throws IllegalAccessException {
+        if(repository.isPresentById(id,DeleteCardRespDto.class).isEmpty()){
+            throw new IllegalAccessException("Card with id '"+id+"' does not exist.");
+        }
         Optional<DeleteCardRespDto> optionalAnswer = repository.deleteCardById(id);
         return setResponseIfOptionalIsOrNotEmpty(optionalAnswer, "Card not found");
     }
 
     @Override
-    public ResponseDto<UpdateCardRespDto> updateCardById(Long id, UpdateCardReqDto updateCardReqDto) {
+    public ResponseDto<UpdateCardRespDto> updateCardById(Long id, UpdateCardReqDto updateCardReqDto) throws IllegalAccessException {
+        if(repository.isPresentById(id,UpdateCardRespDto.class).isEmpty()){
+            throw new IllegalAccessException("Card with id '"+id+"' does not exist.");
+        }
         Optional<UpdateCardRespDto> optionalAnswer = repository.updateCardById(id,updateCardReqDto);
         return setResponseIfOptionalIsOrNotEmpty(optionalAnswer, "Card not found");
     }
-
 }

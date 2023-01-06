@@ -15,5 +15,5 @@ import java.math.BigDecimal;
 public class DeleteCurrencyRespDto extends BaseFieldsResponseDTO {
     private String name;
     private String code;
-    private BigDecimal exchangeRateToUSD;
+    private BigDecimal exchange_rate_to_usd;
 }

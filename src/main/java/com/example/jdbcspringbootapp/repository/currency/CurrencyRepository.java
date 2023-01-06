@@ -13,7 +13,7 @@ public interface CurrencyRepository extends JdbcExceptionWrappingRepository {
     Optional<GetFirstCurrencyRespDto> getFirstCurrency();
     Optional<DeleteCurrencyRespDto> deleteCurrencyById(Long id);
     Optional<UpdateCurrencyRespDto> updateCurrencyById(Long id, UpdateCurrencyReqDto updateCurrencyReqDto);
-    Optional<Long> tryExistenceByCode(String code);
-    Optional<String> tryExistenceById(Long id);
-    boolean isDeletedById(Long id);
+    <C> Optional<C> isPresentById(Long id, Class<C> responseClassToMapOn);
+    <C> Optional<C> isPresentByName(String cardName, Class<C> responseClassToMapOn);
+    <C> Optional<C> isPresentByCode(String currencyCode, Class<C> responseClassToMapOn);
 }

@@ -4,7 +4,6 @@ import com.example.jdbcspringbootapp.model.dto.request.transaction.CreateTransac
 import com.example.jdbcspringbootapp.model.dto.request.transaction.UpdateTransactionReqDto;
 import com.example.jdbcspringbootapp.model.dto.response.transaction.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -21,125 +20,109 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 
     @Override
     public Optional<CreateTransactionRespDto> createTransaction(CreateTransactionReqDto createTransactionReqDto) {
-        var sql = "INSERT INTO dbo.transactions                                                                                       "
-                + "(direction, amount, cardId, currencyId, transactionCategoryID, infoExtra)                                          "
-                + "VALUES                                                                                                             "
-                + "(:direction::dbo.TRANSACTION_DIRECTIONS_DBENUM, :amount, :cardId, :currencyId, :transactionCategoryID, :infoExtra) "
-                + "RETURNING *                                                                                                        ";
+        var sql = "INSERT INTO dbo.Transactions                                                        "
+                + "(direction, amount, card_id, currency_id, transaction_category_id, info_extra)      "
+                + "VALUES                                                                              "
+                + "(:direction, :amount, :card_id, :currency_id, :transaction_category_id, info_extra);"
+                + "SELECT * FROM dbo.Transactions WHERE id = SCOPE_IDENTITY()                          ";
         var params = new MapSqlParameterSource()
                 .addValue("direction", createTransactionReqDto.getDirection().toString())
                 .addValue("amount", createTransactionReqDto.getAmount())
-                .addValue("cardId", createTransactionReqDto.getCardId())
-                .addValue("currencyId", createTransactionReqDto.getCurrencyId())
-                .addValue("transactionCategoryID", createTransactionReqDto.getTransactionCategoryID())
-                .addValue("infoExtra", createTransactionReqDto.getInfoExtra());
-
-        try {
-            return Optional.ofNullable(namedParameterJdbcTemplate
-                    .queryForObject(sql, params, new BeanPropertyRowMapper<>(CreateTransactionRespDto.class)));
-        } catch (DataAccessException e) {
-            return Optional.empty();
-        }
+                .addValue("card_id", createTransactionReqDto.getCard_id())
+                .addValue("currency_id", createTransactionReqDto.getCurrency_id())
+                .addValue("transaction_category_id", createTransactionReqDto.getTransaction_category_id())
+                .addValue("info_extra", createTransactionReqDto.getInfo_extra());
+        return executeQueryWithOptionalResult(() -> namedParameterJdbcTemplate
+                .queryForObject(sql, params, new BeanPropertyRowMapper<>(CreateTransactionRespDto.class)));
     }
 
     @Override
     public Optional<GetTransactionRespDto> getTransactionById(Long id) {
-        var sql = "SELECT * FROM dbo.transactions WHERE id=:id";
+        var sql = "SELECT * FROM dbo.Transactions WHERE id=:id";
         var params = new MapSqlParameterSource()
                 .addValue("id", id);
-
-        try {
-            return Optional.ofNullable(namedParameterJdbcTemplate
-                    .queryForObject(sql, params, new BeanPropertyRowMapper<>(GetTransactionRespDto.class)));
-        } catch (DataAccessException e) {
-            e.getStackTrace();
-            return Optional.empty();
-        }
+        return executeQueryWithOptionalResult(() -> namedParameterJdbcTemplate
+                .queryForObject(sql, params, new BeanPropertyRowMapper<>(GetTransactionRespDto.class)));
     }
 
     @Override
     public Optional<GetFirstTransactionRespDto> getFirstTransaction() {
-        var sql = "SELECT * FROM dbo.transactions LIMIT 1";
-        try {
-            return Optional.ofNullable(namedParameterJdbcTemplate
-                    .queryForObject(sql
-                            ,new MapSqlParameterSource()
-                            ,new BeanPropertyRowMapper<>(GetFirstTransactionRespDto.class)
-                    ));
-
-        } catch (DataAccessException e) {
-            return Optional.empty();
-        }
+        var sql = "SELECT TOP 1 * FROM dbo.Transactions";
+        return executeQueryWithOptionalResult(() -> namedParameterJdbcTemplate
+                .queryForObject(sql
+                        , new MapSqlParameterSource()
+                        , new BeanPropertyRowMapper<>(GetFirstTransactionRespDto.class)
+                ));
     }
 
     @Override
     public Optional<DeleteTransactionRespDto> deleteTransactionById(Long id) {
-        var sqlDel = "DELETE FROM dbo.transactions WHERE id=:id RETURNING *";
+        var sqlDel =  " delete dbo.Transactions                                                       "
+                    + " output deleted.id, deleted.direction, deleted.amount, deleted.card_id         "
+                    + "     , deleted.currency_id, deleted.info_extra, deleted.transaction_category_id"
+                    + "     , deleted.guid , deleted.created_time, deleted.modified_time              "
+                    + " where id = :id                                                                ";
         var params = new MapSqlParameterSource()
                 .addValue("id", id);
-        try {
-            return Optional.ofNullable(namedParameterJdbcTemplate
-                    .queryForObject(sqlDel, params, new BeanPropertyRowMapper<>(DeleteTransactionRespDto.class)));
-        } catch (DataAccessException e) {
-            return Optional.empty();
-        }
+        return executeQueryWithOptionalResult(() -> namedParameterJdbcTemplate
+                .queryForObject(sqlDel, params, new BeanPropertyRowMapper<>(DeleteTransactionRespDto.class)));
     }
 
     @Override
     //Returning old object
     public Optional<UpdateTransactionRespDto> updateTransactionById(
-            Long id, UpdateTransactionReqDto updateTransactionReqDto
-    ) {
-        var sqlGet = "SELECT * FROM dbo.transactions WHERE id=:id";
-        var paramsSqlGet = new MapSqlParameterSource()
+            Long id, UpdateTransactionReqDto updateTransactionReqDto)
+    {
+        var paramsForSqlSource = new MapSqlParameterSource()
                 .addValue("id", id);
-        UpdateTransactionRespDto oldTransactionUpdtRespDto;
-        try {
-            oldTransactionUpdtRespDto = namedParameterJdbcTemplate // getting deleting entity
-                    .queryForObject(sqlGet, paramsSqlGet, new BeanPropertyRowMapper<>(UpdateTransactionRespDto.class));
-        } catch (DataAccessException e) {
-            e.getStackTrace();
-            oldTransactionUpdtRespDto = null;
-        }
-
-        var paramsSqlUpdate = new MapSqlParameterSource()
-                .addValue("id", id);
-        List<String> params = new ArrayList<>();
-
+        List<String> paramsForSetClause = new ArrayList<>();
         if (updateTransactionReqDto.getDirection() != null) {
-            params.add("direction=:direction::dbo.TRANSACTION_DIRECTIONS_DBENUM");
-            paramsSqlUpdate.addValue("direction", updateTransactionReqDto.getDirection().toString());
+            paramsForSetClause.add(" direction='"+updateTransactionReqDto.getDirection().toString()+"' ");
         }
         if (updateTransactionReqDto.getAmount() != null) {
-            params.add(" amount=:amount");
-            paramsSqlUpdate.addValue("amount", updateTransactionReqDto.getAmount());
+            paramsForSetClause.add(" amount="+updateTransactionReqDto.getAmount());
         }
-        if (updateTransactionReqDto.getCardId() != null) {
-            params.add("cardId=:cardId");
-            paramsSqlUpdate.addValue("cardId", updateTransactionReqDto.getCardId());
+        if (updateTransactionReqDto.getCard_id() != null) {
+            paramsForSetClause.add(" card_id="+updateTransactionReqDto.getCard_id());
         }
-        if (updateTransactionReqDto.getCurrencyId() != null) {
-            params.add(" currencyId=:currencyId");
-            paramsSqlUpdate.addValue("currencyId", updateTransactionReqDto.getCurrencyId());
+        if (updateTransactionReqDto.getCurrency_id() != null) {
+            paramsForSetClause.add(" currency_id="+updateTransactionReqDto.getCurrency_id());
         }
-        if (updateTransactionReqDto.getTransactionCategoryID() != null) {
-            params.add("transactionCategoryID=:transactionCategoryID");
-            paramsSqlUpdate.addValue("transactionCategoryID", updateTransactionReqDto.getTransactionCategoryID());
+        if (updateTransactionReqDto.getTransaction_category_id() != null) {
+            paramsForSetClause.add(" transaction_category_id="+updateTransactionReqDto.getTransaction_category_id());
         }
-        if (updateTransactionReqDto.getInfoExtra() != null) {
-            params.add(" infoExtra=:infoExtra");
-            paramsSqlUpdate.addValue("infoExtra", updateTransactionReqDto.getInfoExtra());
+        if (updateTransactionReqDto.getInfo_extra() != null) {
+            paramsForSetClause.add(" transaction_category_id='"+updateTransactionReqDto.getInfo_extra()+"' ");
         }
+        var sqlSource =   "declare @TempTable table(  id                      bigint                   "
+                        + "                         , direction               varchar(7)               "
+                        + "                         , amount                  bigint                   "
+                        + "                         , card_id                 bigint                   "
+                        + "                         , currency_id             bigint                   "
+                        + "                         , transaction_category_id bigint                   "
+                        + "                         , extra_info              varchar(100)             "
+                        + "                         , guid                    uniqueidentifier         "
+                        + "                         , created_time            datetime2(3)             "
+                        + "                         , modified_time           datetime2(3)      )      "
+                        + " update dbo.Transactions set " + String.join(",", paramsForSetClause)
+                        + " output deleted.id          , deleted.direction                             "
+                        + "      , deleted.amount      , deleted.card_id                               "
+                        + "      , deleted.currency_id , deleted.transaction_category_id               "
+                        + "      , deleted.extra_info  , deleted.guid                                  "
+                        + "      , deleted.created_time, deleted.modified_time                         "
+                        + " into @TempTable                                                            "
+                        + " where id=:id;                                                              "
+                        + " select * from @TempTable                                                   ";
+        return executeQueryWithOptionalResult(() -> namedParameterJdbcTemplate.queryForObject(
+                sqlSource, paramsForSqlSource, new BeanPropertyRowMapper<>(UpdateTransactionRespDto.class)));
+    }
 
-        var sqlUpdate =   "UPDATE dbo.transactions SET                                      "
-                        + String.join(",", params)
-                        + ", uuid=gen_random_uuid(), modified_timestamp = current_timestamp "
-                        + "WHERE id=:id                                                     ";
-        try {
-            namedParameterJdbcTemplate.update(sqlUpdate, paramsSqlUpdate);
-            return Optional.ofNullable(oldTransactionUpdtRespDto);
-        } catch (DataAccessException e) {
-            return Optional.empty();
-        }
+    @Override
+    public <C> Optional<C> isPresentById(Long id, Class<C> responseClassToMapOn) {
+        String sql = "SELECT * FROM dbo.Transactions WHERE id=:id";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("id", id);
+        return executeQueryWithOptionalResult(() -> namedParameterJdbcTemplate
+                .queryForObject(sql, params, new BeanPropertyRowMapper<>(responseClassToMapOn)));
     }
 }

@@ -5,6 +5,7 @@ import com.example.jdbcspringbootapp.model.enums.Transaction_Directions;
 import lombok.*;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 @Builder
@@ -16,8 +17,8 @@ import java.math.BigDecimal;
 public class GetTransactionRespDto extends BaseFieldsResponseDTO {
     private Transaction_Directions direction;
     private BigDecimal amount;
-    private Long cardId;
-    private Long currencyId;
-    private Long transactionCategoryID;
-    private String infoExtra;
+    private Long card_id;
+    private Long currency_id;
+    private Long transaction_category_id;
+    private String info_extra;
 }

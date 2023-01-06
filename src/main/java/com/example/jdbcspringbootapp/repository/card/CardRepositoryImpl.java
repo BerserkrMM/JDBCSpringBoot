@@ -72,27 +72,18 @@ public class CardRepositoryImpl implements CardRepository {
         var paramsForSqlSource = new MapSqlParameterSource()
                 .addValue("id", id);
         List<String> paramsForSetClause = new ArrayList<>();
-        List<String> paramsForTempTable = new ArrayList<>();
 
         if (updateCardReqDto.getAmount() != null) {
-            paramsForTempTable.add("amount bigint");
-            paramsForSetClause.add("amount=:amount");
-            paramsForSqlSource.addValue("amount", updateCardReqDto.getAmount());
+            paramsForSetClause.add("amount=" + updateCardReqDto.getAmount());
         }
         if (updateCardReqDto.getName() != null) {
-            paramsForTempTable.add("name varchar(50)");
-            paramsForSetClause.add(" name=:cardname");
-            paramsForSqlSource.addValue("cardname", updateCardReqDto.getName());
+            paramsForSetClause.add(" name= '" + updateCardReqDto.getName() + "' ");
         }
         if (updateCardReqDto.getCurrency_id() != null) {
-            paramsForTempTable.add("currency_id bigint");
-            paramsForSetClause.add(" currency_id=:currencyId");
-            paramsForSqlSource.addValue("currencyId", updateCardReqDto.getCurrency_id());
+            paramsForSetClause.add(" currency_id=" + updateCardReqDto.getCurrency_id());
         }
         if (updateCardReqDto.getBank_name() != null) {
-            paramsForTempTable.add("bank_name varchar(50)");
-            paramsForSetClause.add(" bank_name=:bankname");
-            paramsForSqlSource.addValue("bankname", updateCardReqDto.getBank_name());
+            paramsForSetClause.add(" bank_name= '" + updateCardReqDto.getBank_name() + "' ");
         }
 
         var sqlSource =   "declare @TempTable table(id bigint                 , guid uniqueidentifier     "
@@ -112,10 +103,20 @@ public class CardRepositoryImpl implements CardRepository {
     }
 
     @Override
-    public Optional<Long> tryExistenceByName(String cardName) {
-        String sql = "SELECT id FROM dbo.Cards WHERE name=:name";
+    public <C> Optional<C> isPresentByName(String cardName, Class<C> responseClassToMapOn) {
+        String sql = "SELECT * FROM dbo.Cards WHERE name=:name";
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("name", cardName);
-        return executeQueryWithOptionalResult(() -> namedParameterJdbcTemplate.queryForObject(sql, params, Long.class));
+        return executeQueryWithOptionalResult(() -> namedParameterJdbcTemplate
+                .queryForObject(sql, params, new BeanPropertyRowMapper<>(responseClassToMapOn)));
+    }
+
+    @Override
+    public <C> Optional<C> isPresentById(Long id, Class<C> responseClassToMapOn) {
+        String sql = "SELECT * FROM dbo.Cards WHERE id=:id";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("id", id);
+        return executeQueryWithOptionalResult(() -> namedParameterJdbcTemplate
+                .queryForObject(sql, params, new BeanPropertyRowMapper<>(responseClassToMapOn)));
     }
 }

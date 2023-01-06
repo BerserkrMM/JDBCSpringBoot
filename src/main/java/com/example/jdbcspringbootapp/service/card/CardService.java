@@ -12,6 +12,6 @@ public interface CardService extends ResponseIfOptionalIsOrNotEmpty {
     ResponseDto<CreateCardRespDto> createCard(CreateCardReqDto createCardReqDto) throws IllegalAccessException;
     ResponseDto<GetCardRespDto> getCardById(Long id);
     ResponseDto<GetFirstCardRespDto> getFirstCard();
-    ResponseDto<DeleteCardRespDto> deleteCardById(Long id);
-    ResponseDto<UpdateCardRespDto> updateCardById(Long id, UpdateCardReqDto updateCardReqDto);
+    ResponseDto<DeleteCardRespDto> deleteCardById(Long id) throws IllegalAccessException;
+    ResponseDto<UpdateCardRespDto> updateCardById(Long id, UpdateCardReqDto updateCardReqDto) throws IllegalAccessException;
 }

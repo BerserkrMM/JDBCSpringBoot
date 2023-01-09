@@ -16,7 +16,8 @@ public class CardServiceImpl implements CardService {
     private final CardRepository repository;
 
     @Override
-    public ResponseDto<CreateCardRespDto> createCard(CreateCardReqDto createCardReqDto) throws IllegalAccessException {
+    public ResponseDto<CreateCardRespDto> createCard(CreateCardReqDto createCardReqDto) throws IllegalAccessException
+    {
         if (repository.isPresentByName(createCardReqDto.getName(), CreateCardRespDto.class).isPresent()) {
             throw new IllegalAccessException("Card already exist.");
         }
@@ -25,19 +26,22 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
-    public ResponseDto<GetCardRespDto> getCardById(Long id) {
+    public ResponseDto<GetCardRespDto> getCardById(Long id)
+    {
         Optional<GetCardRespDto> optionalAnswer = repository.getCardById(id);
         return setResponseIfOptionalIsOrNotEmpty(optionalAnswer,"Card not found.");
     }
 
     @Override
-    public ResponseDto<GetFirstCardRespDto> getFirstCard() {
+    public ResponseDto<GetFirstCardRespDto> getFirstCard()
+    {
         Optional<GetFirstCardRespDto> optionalAnswer = repository.getFirstCard();
         return setResponseIfOptionalIsOrNotEmpty(optionalAnswer,"Card not found.");
     }
 
     @Override
-    public ResponseDto<DeleteCardRespDto> deleteCardById(Long id) throws IllegalAccessException {
+    public ResponseDto<DeleteCardRespDto> deleteCardById(Long id) throws IllegalAccessException
+    {
         if(repository.isPresentById(id,DeleteCardRespDto.class).isEmpty()){
             throw new IllegalAccessException("Card with id '"+id+"' does not exist.");
         }
@@ -46,7 +50,8 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
-    public ResponseDto<UpdateCardRespDto> updateCardById(Long id, UpdateCardReqDto updateCardReqDto) throws IllegalAccessException {
+    public ResponseDto<UpdateCardRespDto> updateCardById(Long id, UpdateCardReqDto updateCardReqDto) throws IllegalAccessException
+    {
         if(repository.isPresentById(id,UpdateCardRespDto.class).isEmpty()){
             throw new IllegalAccessException("Card with id '"+id+"' does not exist.");
         }

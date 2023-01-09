@@ -25,9 +25,9 @@ class CardRepositoryImplTest {
     @Autowired
     DataSource dataSource;
 
-    //@Test
-    void testMethod() {
-
-        assertThat(1L).isEqualTo(1L);
+    //todo
+    @Test
+    void createCardTast() {
+        assertThat(cardRepository).isNotNull();
     }
 }

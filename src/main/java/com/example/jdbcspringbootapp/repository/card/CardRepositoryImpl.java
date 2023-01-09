@@ -37,7 +37,7 @@ public class CardRepositoryImpl implements CardRepository {
 
     @Override
     public Optional<GetCardRespDto> getCardById(Long id) {
-        var sql = "SELECT * FROM dbo.Cards WHERE id = :id";
+        var sql = "SELECT * FROM dbo.Cards WHERE id = :id and is_deleted = 'N'";
         var params = new MapSqlParameterSource()
                 .addValue("id", id);
 
@@ -47,7 +47,7 @@ public class CardRepositoryImpl implements CardRepository {
 
     @Override
     public Optional<GetFirstCardRespDto> getFirstCard() {
-        var sql = "SELECT TOP 1 * FROM dbo.Cards";
+        var sql = "SELECT TOP 1 * FROM dbo.Cards and is_deleted = 'N'";
         return executeQueryWithOptionalResult(() -> namedParameterJdbcTemplate
                 .queryForObject(sql
                         , new MapSqlParameterSource()
@@ -56,10 +56,10 @@ public class CardRepositoryImpl implements CardRepository {
 
     @Override
     public Optional<DeleteCardRespDto> deleteCardById(Long id) {
-        var sqlDel =  "delete dbo.Cards                                                                      "
-                    + "output deleted.id, deleted.amount, deleted.name, deleted.bank_name,                   "
-                    + "       deleted.currency_id, deleted.guid, deleted.created_time, deleted.modified_time "
-                    + "where id = :id                                                                        ";
+        var sqlDel =  "update dbo.Cards                      "
+                    + "set is_deleted = 'Y'                         "
+                    + "where id = :id;                              "
+                    + "select * from dbo.Cards where id = :id";
         var params = new MapSqlParameterSource()
                 .addValue("id", id);
         return executeQueryWithOptionalResult(() -> namedParameterJdbcTemplate
@@ -96,7 +96,7 @@ public class CardRepositoryImpl implements CardRepository {
                         + "      , deleted.amount      , deleted.name                                     "
                         + "      , deleted.bank_name   , deleted.currency_id                              "
                         + " into @TempTable                                                               "
-                        + " where id=:id;                                                                 "
+                        + " where id=:id and is_deleted = 'N';                                            "
                         + " select * from @TempTable                                                      ";
         return executeQueryWithOptionalResult(()->namedParameterJdbcTemplate.queryForObject(
                 sqlSource,paramsForSqlSource,new BeanPropertyRowMapper<>(UpdateCardRespDto.class)));

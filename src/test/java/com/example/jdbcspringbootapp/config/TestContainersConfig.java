@@ -18,7 +18,7 @@ public class TestContainersConfig {
             if (container == null) {
                 container = new CustomMSSQLContainer()
                         .acceptLicense()
-                        .withInitScript("sql/create_schema.sql")
+                        .withInitScript("resources/sql/init/create_schema.sql")
                         .waitingFor(Wait.forListeningPort());
             }
             return container;

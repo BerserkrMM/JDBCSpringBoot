@@ -38,7 +38,7 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
 
     @Override
     public Optional<GetCurrencyRespDto> getCurrencyById(Long id) {
-        var sql = "SELECT * FROM dbo.Currencies WHERE id=:id";
+        var sql = "SELECT * FROM dbo.Currencies WHERE id=:id and is_deleted = 'N'";
         var params = new MapSqlParameterSource()
                 .addValue("id", id);
         return executeQueryWithOptionalResult(() -> (namedParameterJdbcTemplate
@@ -47,7 +47,7 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
 
     @Override
     public Optional<GetFirstCurrencyRespDto> getFirstCurrency() {
-        var sql = "SELECT TOP 1 * FROM dbo.Currencies";
+        var sql = "SELECT TOP 1 * FROM dbo.Currencies and is_deleted = 'N'";
 
         return executeQueryWithOptionalResult(() -> (namedParameterJdbcTemplate
                 .queryForObject(sql
@@ -58,10 +58,10 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
 
     @Override
     public Optional<DeleteCurrencyRespDto> deleteCurrencyById(Long id) {
-        var sqlDel = " delete dbo.Currencies                                                       "
-                   + " output deleted.id, deleted.guid, deleted.created_time, deleted.modified_time"
-                   + ", deleted.name, deleted.code, deleted.exchange_rate_to_usd                   "
-                   + " where id = :idCur                                                           ";
+        var sqlDel =  "update dbo.Currencies                      "
+                    + "set is_deleted = 'Y'                       "
+                    + "where id = :id;                            "
+                    + "select * from dbo.Currencies where id = :id";
         var params = new MapSqlParameterSource()
                 .addValue("idCur", id);
         return executeQueryWithOptionalResult(() -> (namedParameterJdbcTemplate
@@ -93,7 +93,7 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
                         + " output deleted.id          , deleted.guid , deleted.created_time              "
                         + "      , deleted.modified_time, deleted.exchange_rate_to_usd                    "
                         + " into @TempTable                                                               "
-                        + " where id=:id;                                                                 "
+                        + " where id=:id and is_deleted = 'N';                                            "
                         + " select * from @TempTable                                                      ";
 
         return executeQueryWithOptionalResult(() -> namedParameterJdbcTemplate

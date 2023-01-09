@@ -20,5 +20,4 @@ public class CreateTransactionRespDto extends BaseFieldsResponseDTO {
     private Long currency_id;
     private Long transaction_category_id;
     private String info_extra;
-
 }

@@ -36,7 +36,7 @@ public class TransactionCategoryRepositoryImpl implements TransactionCategoryRep
 
     @Override
     public Optional<GetTransactionCategoryRespDto> getTransactionCategoryById(Long id) {
-        var sql = "SELECT * FROM dbo.Transaction_Categories WHERE id=:id";
+        var sql = "SELECT * FROM dbo.Transaction_Categories WHERE id=:id and is_deleted = 'N'";
         var params = new MapSqlParameterSource()
                 .addValue("id", id);
         return executeQueryWithOptionalResult(()->namedParameterJdbcTemplate
@@ -45,7 +45,7 @@ public class TransactionCategoryRepositoryImpl implements TransactionCategoryRep
 
     @Override
     public Optional<GetFirstTransactionCategoryRespDto> getFirstTransactionCategory() {
-        var sql = "SELECT TOP 1 * FROM dbo.Transaction_Categories";
+        var sql = "SELECT TOP 1 * FROM dbo.Transaction_Categories and is_deleted = 'N'";
         return executeQueryWithOptionalResult(()->namedParameterJdbcTemplate
                 .queryForObject(sql
                         ,new MapSqlParameterSource()
@@ -55,10 +55,10 @@ public class TransactionCategoryRepositoryImpl implements TransactionCategoryRep
 
     @Override
     public Optional<DeleteTransactionCategoryRespDto> deleteTransactionCategoryById(Long id) {
-        var sqlDel =  " delete dbo.Transaction_Categories                          "
-                    + " output deleted.id, deleted.name, deleted.type, deleted.guid"
-                    + "     , deleted.created_time, deleted.modified_time          "
-                    + " where id = :id                                             ";
+        var sqlDel =  "update dbo.Transaction_Categories                      "
+                    + "set is_deleted = 'Y'                                   "
+                    + "where id = :id;                                        "
+                    + "select * from dbo.Transaction_Categories where id = :id";
         var params = new MapSqlParameterSource()
                 .addValue("id", id);
         return executeQueryWithOptionalResult(()->namedParameterJdbcTemplate
@@ -90,7 +90,7 @@ public class TransactionCategoryRepositoryImpl implements TransactionCategoryRep
                 + "      , deleted.type        , deleted.guid                                            "
                 + "      , deleted.created_time, deleted.modified_time                                   "
                 + " into @TempTable                                                                      "
-                + " where id=:id;                                                                        "
+                + " where id=:id and is_deleted = 'N';                                                   "
                 + " select * from @TempTable                                                             ";
         return executeQueryWithOptionalResult(() -> namedParameterJdbcTemplate.queryForObject(
                 sqlSource, paramsForSqlSource, new BeanPropertyRowMapper<>(UpdateTransactionCategoryRespDto.class)));

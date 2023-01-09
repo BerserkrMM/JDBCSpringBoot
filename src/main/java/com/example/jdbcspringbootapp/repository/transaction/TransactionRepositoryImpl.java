@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+import com.example.jdbcspringbootapp.model.enums.IsDeleted;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +24,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         var sql = "INSERT INTO dbo.Transactions                                                        "
                 + "(direction, amount, card_id, currency_id, transaction_category_id, info_extra)      "
                 + "VALUES                                                                              "
-                + "(:direction, :amount, :card_id, :currency_id, :transaction_category_id, info_extra);"
+                + "(:direction, :amount, :card_id, :currency_id, :transaction_category_id, :info_extra);"
                 + "SELECT * FROM dbo.Transactions WHERE id = SCOPE_IDENTITY()                          ";
         var params = new MapSqlParameterSource()
                 .addValue("direction", createTransactionReqDto.getDirection().toString())
@@ -38,7 +39,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 
     @Override
     public Optional<GetTransactionRespDto> getTransactionById(Long id) {
-        var sql = "SELECT * FROM dbo.Transactions WHERE id=:id";
+        var sql = "SELECT * FROM dbo.Transactions WHERE id=:id and is_deleted = 'N'";
         var params = new MapSqlParameterSource()
                 .addValue("id", id);
         return executeQueryWithOptionalResult(() -> namedParameterJdbcTemplate
@@ -47,7 +48,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 
     @Override
     public Optional<GetFirstTransactionRespDto> getFirstTransaction() {
-        var sql = "SELECT TOP 1 * FROM dbo.Transactions";
+        var sql = "SELECT TOP 1 * FROM dbo.Transactions where is_deleted = 'N'";
         return executeQueryWithOptionalResult(() -> namedParameterJdbcTemplate
                 .queryForObject(sql
                         , new MapSqlParameterSource()
@@ -57,11 +58,10 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 
     @Override
     public Optional<DeleteTransactionRespDto> deleteTransactionById(Long id) {
-        var sqlDel =  " delete dbo.Transactions                                                       "
-                    + " output deleted.id, deleted.direction, deleted.amount, deleted.card_id         "
-                    + "     , deleted.currency_id, deleted.info_extra, deleted.transaction_category_id"
-                    + "     , deleted.guid , deleted.created_time, deleted.modified_time              "
-                    + " where id = :id                                                                ";
+        var sqlDel =  "update dbo.Transactions                      "
+                    + "set is_deleted = 'Y'                         "
+                    + "where id = :id;                              "
+                    + "select * from dbo.Transactions where id = :id";
         var params = new MapSqlParameterSource()
                 .addValue("id", id);
         return executeQueryWithOptionalResult(() -> namedParameterJdbcTemplate
@@ -92,7 +92,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
             paramsForSetClause.add(" transaction_category_id="+updateTransactionReqDto.getTransaction_category_id());
         }
         if (updateTransactionReqDto.getInfo_extra() != null) {
-            paramsForSetClause.add(" transaction_category_id='"+updateTransactionReqDto.getInfo_extra()+"' ");
+            paramsForSetClause.add(" info_extra='"+updateTransactionReqDto.getInfo_extra()+"' ");
         }
         var sqlSource =   "declare @TempTable table(  id                      bigint                   "
                         + "                         , direction               varchar(7)               "
@@ -100,7 +100,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
                         + "                         , card_id                 bigint                   "
                         + "                         , currency_id             bigint                   "
                         + "                         , transaction_category_id bigint                   "
-                        + "                         , extra_info              varchar(100)             "
+                        + "                         , info_extra              varchar(100)             "
                         + "                         , guid                    uniqueidentifier         "
                         + "                         , created_time            datetime2(3)             "
                         + "                         , modified_time           datetime2(3)      )      "
@@ -108,10 +108,10 @@ public class TransactionRepositoryImpl implements TransactionRepository {
                         + " output deleted.id          , deleted.direction                             "
                         + "      , deleted.amount      , deleted.card_id                               "
                         + "      , deleted.currency_id , deleted.transaction_category_id               "
-                        + "      , deleted.extra_info  , deleted.guid                                  "
+                        + "      , deleted.info_extra  , deleted.guid                                  "
                         + "      , deleted.created_time, deleted.modified_time                         "
                         + " into @TempTable                                                            "
-                        + " where id=:id;                                                              "
+                        + " where id=:id and is_deleted = 'N';                                         "
                         + " select * from @TempTable                                                   ";
         return executeQueryWithOptionalResult(() -> namedParameterJdbcTemplate.queryForObject(
                 sqlSource, paramsForSqlSource, new BeanPropertyRowMapper<>(UpdateTransactionRespDto.class)));
@@ -124,5 +124,17 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         params.addValue("id", id);
         return executeQueryWithOptionalResult(() -> namedParameterJdbcTemplate
                 .queryForObject(sql, params, new BeanPropertyRowMapper<>(responseClassToMapOn)));
+    }
+
+    public Optional<IsDeleted> isDeletedById (Long id){
+        String sql =  " if (:id = (SELECT id FROM dbo.Cards WHERE id=:id and is_deleted='N'))     "
+                    + "      select 0                                                             "
+                    + " else if (:id = (SELECT id FROM dbo.Cards WHERE id=:id and is_deleted='Y'))"
+                    + "           select 1                                                        "
+                    + "      else select null                                                     ";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("id",id);
+        return executeQueryWithOptionalResult(()->namedParameterJdbcTemplate
+                .queryForObject(sql,params,new BeanPropertyRowMapper<>(IsDeleted.class)));
     }
 }
